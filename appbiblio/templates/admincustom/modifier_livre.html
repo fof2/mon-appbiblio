@@ -1,0 +1,13 @@
+{% extends "admincustom/base.html" %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h2>Modifier un livre</h2>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+      <a href="{% url 'admin_livres' %}" class="btn btn-secondary">Annuler</a>
+    </form>
+  </div>
+{% endblock %}

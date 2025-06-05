@@ -1,0 +1,104 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Livres par catégorie - {{ categorie.nom }}</title>
+
+    <!-- CSS personnalisé -->
+    <link rel="stylesheet" href="{% static 'appbiblio/home.css' %}">
+    <link rel="stylesheet" href="{% static 'appbiblio/detail.css' %}">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+{% include 'appbiblio/navbar.html' %}
+
+<div class="container mt-5 pt-5">
+    <h1>Catégorie : {{ categorie.nom }}</h1>
+    <p>{{ livres|length }} livre{{ livres|length|pluralize }} dans cette catégorie.</p>
+</div>
+
+<!-- Section Livres en Vedette -->
+<section class="featured-books">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="section-title mb-0" id="featured-title">Livres en Vedette</h2>
+            <div class="d-flex gap-2">
+                <button id="scroll-left" class="scroll-btn disabled">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button id="scroll-right" class="scroll-btn">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+
+        {% if livres %}
+        <div class="row">
+            {% for livre in livres %}
+            <div class="col-md-4 mb-4">
+                <div class="book-card border rounded shadow-sm p-3 h-100">
+                    <div class="book-cover mb-3">
+                        <img src="{{ livre.couverture.url }}" alt="Couverture de {{ livre.titre }}" 
+                            style="max-height: 300px; width: auto;" class="img-fluid rounded"
+                            onerror="this.onerror=null;this.src='/media/appbiblio/default.jpg';" />
+                        <div class="book-overlay"></div>
+                        <div class="book-category">{{ livre.categorie.nom }}</div>
+                    </div>
+                    <div class="p-3">
+                        <h3 class="book-title">{{ livre.titre }}</h3>
+                        {% with livre.description|default:"Pas de résumé disponible." as resume %}
+                        <p class="book-summary collapsed" data-fulltext="{{ resume|escapejs }}">
+                            {{ resume|slice:":200" }}{% if resume|length > 200 %}...{% endif %}
+                        </p>
+                        {% if resume|length > 200 %}
+                            <button class="btn btn-link btn-sm toggle-summary">Voir plus</button>
+                        {% endif %}
+                        {% endwith %}
+                        <button class="btn btn-link btn-sm toggle-summary">Voir plus</button>
+                        <div class="book-meta mb-3">
+                            <div class="book-meta-item">
+                                <i class="fas fa-dollar-sign me-1"></i>
+                                <span>{{ livre.prix }}</span>
+                            </div>
+                            <div class="book-meta-item">
+                                <i class="fas fa-book-open me-1"></i>
+                                <span>{{ livre.statut }}</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary btn-sm w-100 btn-reserve" data-book-id="{{ livre.id }}">
+                            {% if livre.statut == 'disponible' %}Réserver{% else %}Emprunter{% endif %}
+                        </button>
+                        <a href="{% url 'ajouter_au_panier' livre.id %}" class="btn btn-primary btn-sm mt-2">Ajouter au panier</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-muted">Aucun livre disponible dans cette catégorie pour le moment.</p>
+        {% endif %}
+    </div>
+</section>
+
+{% include 'appbiblio/footer.html' %}
+
+<!-- JS -->
+<script src="{% static 'appbiblio/valider.js' %}"></script>
+<script src="{% static 'appbiblio/detail.js' %}"></script>
+<script src="{% static 'appbiblio/statistique.js' %}"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.rawgit.com/bfintal/Counter-Up/master/jquery.counterup.min.js"></script>
+</body>
+</html>

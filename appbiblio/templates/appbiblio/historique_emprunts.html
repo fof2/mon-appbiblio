@@ -1,0 +1,66 @@
+{% extends 'appbiblio/panier_base.html' %}
+{% load static %}
+{% block content %}
+
+<h2>🟢 Emprunts Validés</h2>
+{% if emprunts_valides %}
+<table class="table table-bordered table-striped">
+  <thead class="table-dark">
+    <tr>
+      <th>Livre</th>
+      <th>Date de retrait</th>
+      <th>Date de retour</th>
+      <th>Date limite de retrait</th>
+      <th>Statut</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for emprunt in emprunts_valides %}
+    <tr>
+      <td>{{ emprunt.livre.titre }}</td>
+      <td>{{ emprunt.date_retrait|date:"d/m/Y" }}</td>
+      <td>
+        {% if emprunt.date_retour %}
+          {{ emprunt.date_retour|date:"d/m/Y" }}
+        {% else %}
+          <em>Non retourné</em>
+        {% endif %}
+      </td>
+      <td>{{ emprunt.date_limite_retrait|date:"d/m/Y" }}</td>
+      <td><span class="badge bg-success">Validé</span></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>Aucun emprunt validé trouvé.</p>
+{% endif %}
+
+
+<h2 class="mt-5">🟡 Emprunts en Attente de Validation</h2>
+{% if emprunts_non_valides %}
+<table class="table table-bordered table-striped">
+  <thead class="table-warning">
+    <tr>
+      <th>Livre</th>
+      <th>Date prévue de retrait</th>
+      <th>Date prévue de retour</th>
+      <th>Statut</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for emprunt in emprunts_non_valides %}
+    <tr>
+      <td>{{ emprunt.livre.titre }}</td>
+      <td>{{ emprunt.date_prevue_retrait|date:"d/m/Y" }}</td>
+      <td>{{ emprunt.date_prevue_retour|date:"d/m/Y" }}</td>
+      <td><span class="badge bg-warning text-dark">En attente</span></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>Aucune commande en attente.</p>
+{% endif %}
+
+{% endblock %}

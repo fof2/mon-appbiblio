@@ -1,0 +1,22 @@
+{% extends "admincustom/base.html" %}
+{% block content %}
+<h2>Gestion des Livres</h2>
+<a href="{% url 'ajouter_livre' %}" class="btn btn-success">Ajouter un livre</a>
+<table class="table">
+    <tr><th>Titre</th><th>Auteur</th><th>Statut</th><th>Actions</th></tr>
+    {% for livre in livres %}
+    <tr>
+        <td>{{ livre.titre }}</td>
+        <td>{{ livre.auteur }}</td>
+        <td>{{ livre.statut }}</td>
+        <td>
+            <a href="{% url 'modifier_livre' livre.id %}" class="btn btn-sm btn-primary">Modifier</a>
+            <a href="{% url 'supprimer_livre' livre.id %}" class="btn btn-sm btn-danger">Supprimer</a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="4">Aucun livre trouvé.</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}
+

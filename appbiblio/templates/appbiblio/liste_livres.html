@@ -1,0 +1,12 @@
+{% extends 'appbiblio/base.html' %}
+<ul>
+{% for livre in livres %}
+    <li>
+        <h3>{{ livre.titre }}</h3>
+        <p>{{ livre.auteur }}</p>
+        <!-- Lien pour ajouter le livre au panier -->
+        <a href="{% url 'ajouter_au_panier' livre.id %}">Ajouter au panier</a>
+    </li>
+{% endfor %}
+</ul>
+

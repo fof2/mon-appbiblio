@@ -1,0 +1,11 @@
+<h2>Mon Panier</h2>
+
+{% if livres %}
+    <ul>
+        {% for livre in livres %}
+            <li>{{ livre.titre }} - {{ livre.auteur }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Votre panier est vide.</p>
+{% endif %}

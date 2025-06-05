@@ -1,0 +1,79 @@
+/* appbiblio/static/appbiblio/style.css */
+
+/* Personnalisation de la navbar */
+.navbar-custom {
+    background: linear-gradient(90deg, #343a40, #495057);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.navbar-custom .navbar-brand,
+.navbar-custom .nav-link {
+    color: #ffffff;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.navbar-custom .nav-link:hover {
+    color: #ffc107;
+}
+
+/* Marges générales */
+.container {
+    margin-top: 30px;
+}
+
+/* Style des cartes de livres */
+.livre-card {
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s ease-in-out;
+    background: #ffffff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.livre-card:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    transform: translateY(-4px);
+}
+
+/* Titre des livres */
+.livre-card h5 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #343a40;
+    margin-bottom: 10px;
+}
+
+/* Bouton like */
+.like-button {
+    color: #dc3545;
+    cursor: pointer;
+    font-size: 22px;
+    transition: transform 0.2s, color 0.2s;
+}
+
+.like-button:hover {
+    color: #ff4d6d;
+    transform: scale(1.2);
+}
+
+/* Ajout d’un badge dynamique pour les stats */
+.badge-stat {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: #6f42c1;
+    color: #fff;
+    font-size: 14px;
+    margin-left: 8px;
+}
+
+/* Amélioration des liens globaux */
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}

@@ -1,0 +1,35 @@
+{% extends "admincustom/base.html" %}
+{% load static %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4">Gestion des Paniers</h2>
+  <table class="table table-bordered table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>Utilisateur</th>
+        <th>Livres dans le Panier</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for panier in paniers %}
+      <tr>
+        <td>{{ panier.utilisateur.username }}</td>
+        <td>
+          {% if panier.livres.all %}
+            <ul>
+              {% for livre in panier.livres.all %}
+              <li>{{ livre.titre }}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            Aucun livre
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="2">Aucun panier trouvé.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

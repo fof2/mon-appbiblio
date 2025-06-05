@@ -1,0 +1,35 @@
+
+    body {
+      background-color: #f5f5f5;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 50px 0;
+    }
+
+    .banner {
+      background: linear-gradient(90deg, #6a11cb, #2575fc);
+      color: #fff;
+      font-size: 40px;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      animation: colorChange 5s infinite alternate;
+    }
+
+    @keyframes colorChange {
+      from { background: linear-gradient(90deg, #6a11cb, #2575fc); }
+      to { background: linear-gradient(90deg, #ff6a00, #ee0979); }
+    }
+
+    marquee {
+      font-style: italic;
+      font-weight: bold;
+      font-size: 50px;
+      color: #fff;
+    }
+
+    marquee u {
+      text-decoration: underline;
+    }
+

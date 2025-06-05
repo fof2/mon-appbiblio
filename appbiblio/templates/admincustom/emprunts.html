@@ -1,0 +1,31 @@
+{% extends "admincustom/base.html" %}
+{% load static %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4">Gestion des Emprunts</h2>
+  <table class="table table-bordered table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>Livre</th>
+        <th>Utilisateur</th>
+        <th>Date de Retrait</th>
+        <th>Date de Retour</th>
+        <th>Date Limite Retrait</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for emprunt in emprunts %}
+      <tr>
+        <td>{{ emprunt.livre.titre }}</td>
+        <td>{{ emprunt.utilisateur.username }}</td>
+        <td>{{ emprunt.date_retrait }}</td>
+        <td>{{ emprunt.date_retour|default:"Non retourné" }}</td>
+        <td>{{ emprunt.date_limite_retrait }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5">Aucun emprunt enregistré.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

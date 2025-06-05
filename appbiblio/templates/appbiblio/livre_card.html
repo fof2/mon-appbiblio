@@ -1,0 +1,31 @@
+{% for livre in livres %}
+<div class="col-md-4 mb-4">
+    <div class="book-card border rounded shadow-sm p-3 h-100">
+        <div class="book-cover mb-3">
+            <img src="{{ livre.couverture.url }}" alt="Couverture du livre {{ livre.titre }}"
+                 onerror="this.onerror=null;this.src='/media/appbiblio/default.jpg';"
+                 class="img-fluid rounded" />
+            <div class="book-overlay"></div>
+            <div class="book-category">{{ livre.categorie.nom }}</div>
+        </div>
+        <div class="p-3">
+            <h3 class="book-title">{{ livre.titre }}</h3>
+            <p class="book-author">{{ livre.auteur }}</p>
+            <div class="book-meta mb-3">
+                <div class="book-meta-item">
+                    <i class="fas fa-dollar-sign me-1"></i>
+                    <span>{{ livre.prix }}</span>
+                </div>
+                <div class="book-meta-item">
+                    <i class="fas fa-book-open me-1"></i>
+                    <span>{{ livre.statut }}</span>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-sm w-100 btn-reserve" data-book-id="{{ livre.id }}">
+                {% if livre.statut == 'disponible' %}Réserver{% else %}Emprunter{% endif %}
+            </button>
+            <a href="{% url 'ajouter_au_panier' livre.id %}" class="btn btn-primary btn-sm mt-2">Ajouter au panier</a>
+        </div>
+    </div>
+</div>
+{% endfor %}

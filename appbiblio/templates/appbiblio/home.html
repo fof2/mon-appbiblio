@@ -1,0 +1,464 @@
+{%load static %}
+<!-- monbiblio/appbiblio/templates/appbiblio/home.html-->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚MonBiblio</title>
+    <link rel="stylesheet" href="{% static 'appbiblio/home.css' %}">
+
+
+    <!-- Bootstrap CSS (une seule version) -->
+     <link rel="stylesheet" href="{% static 'appbiblio/styles1.css' %}">
+    <link rel="stylesheet" href="{% static 'appbiblio/body.css' %}">
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome (une seule version récente) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Google Fonts - Playfair Display -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Fichiers CSS personnalisés
+    
+    <link rel="stylesheet" href="{% static 'appappbiblio/footer.css' %}">
+    <link rel="stylesheet" href="{% static 'appbiblio/livre.css' %}">
+    -->
+</head>
+
+<body>
+    <!-- Barre de navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+                <i class="fas fa-book me-2"></i>
+                Bibliothèque
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'gestion_admin' %}">admin-biblio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'emprunts' %}">MesCommandes</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a href="{% url 'logout' %}" class="nav-link text-danger">Déconnexion</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Connexion</a>
+                        </li>
+                    {% endif %}
+                </ul>
+                <div class="d-none d-lg-flex ms-lg-3">
+                    <a href="#" class="btn btn-sm btn-outline-light rounded-pill">
+                        <i class="fas fa-search me-1"></i> Rechercher
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Section Hero -->
+<section class="hero-section">
+    <!-- Fonds images -->
+    <div class="hero-bg active" style="background-image: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2030&auto=format&fit=crop');"></div>
+    <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=2070&auto=format&fit=crop');"></div>
+    <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1461342110089-4037e3abd5da?q=80&w=2070&auto=format&fit=crop');"></div>
+    <div class="hero-overlay"></div>
+
+    <!-- Contenu -->
+    <div class="container">
+        <div class="hero-content">
+            <div class="banner">
+                <marquee scrollamount="10">
+                <i><u>MonBiblio 📚</u>, l'univers des livres les plus célèbres</i>
+                </marquee>
+            </div>            
+            <h1 class="hero-title">Découvrez de nouveaux mondes à travers les livres</h1>
+            <p class="hero-text">Notre bibliothèque vous offre un accès à des milliers d'ouvrages. Empruntez, réservez et plongez dans l'univers fascinant de la littérature.</p>
+            <div class="d-flex flex-column flex-sm-row gap-3">
+                <a href="#" class="btn btn-primary hero-btn hero-btn-primary">
+                    Explorer le catalogue
+                    <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+                <a href="#" class="btn btn-outline-light hero-btn hero-btn-outline">
+                    <i class="fas fa-book-open me-2"></i>
+                    Nouveautés
+                </a>
+            </div></br></br></br>
+            <div class="slider-indicators">
+                <span class="slider-dot active" data-index="0"></span>
+                <span class="slider-dot" data-index="1"></span>
+                <span class="slider-dot" data-index="2"></span>
+            </div>
+        </div>
+    </div>
+</section>
+</br></br></br>
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h2>Bienvenue, {{ request.user.username }} !</h2>
+            </div>
+            <div class="card-body">
+                <p class="lead">Nous sommes heureux de vous avoir parmi nous.</p>
+                <p class="mb-4">Vous pouvez maintenant commencer à explorer notre bibliothèque en ligne et commender des livres.</p>
+                <!-- Ajouter un bouton qui redirige vers la page d'accueil -->
+                <a href="{% url 'home' %}" class="btn btn-primary">Accéder à votre bibliothèque</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lien vers Bootstrap JS (pour les composants interactifs si nécessaire) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Section Catégories -->
+<div class="container">
+    <div class="row">
+        <!-- Section: Filtres par Catégories -->
+        <section class="col-md-3 mb-4" id="categorie-filter-section">
+            <div class="accordion" id="accordionCategories">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingCategories">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCategories" aria-expanded="true" aria-controls="collapseCategories">
+                            Filtrer par Catégorie
+                        </button>
+                    </h2>
+                    <div id="collapseCategories" class="accordion-collapse collapse show" aria-labelledby="headingCategories" data-bs-parent="#accordionCategories">
+                        <div class="accordion-body p-0">
+                            <ul class="list-group list-group-flush">
+                                {% for categorie in categories %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="{% url 'categorie_detail' categorie.id %}" class="text-decoration-none">
+                                        {{ categorie.nom }}
+                                    </a>
+                                    <span class="badge bg-secondary rounded-pill">{{ categorie.nombre_livres }}</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+<!-- Section: Livres en Vedette -->
+<section class="col-md-9" id="featured-books-section">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="section-title mb-0" id="featured-title">Livres en Vedette</h2>
+        <div class="d-flex gap-2">
+            <button id="scroll-left" class="scroll-btn disabled">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button id="scroll-right" class="scroll-btn">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="d-flex overflow-auto gap-3" id="featured-books-container" style="scroll-behavior: smooth;">
+        {% for livre in livres %}
+            <div class="flex-shrink-0" style="width: 300px;">
+                <div class="book-card border rounded shadow-sm p-3 h-100">
+                    <div class="book-cover mb-3">
+                        <img src="{{ livre.couverture_img }}" alt="Couverture de {{ livre.titre }}" style="max-height: 300px;" />
+                        <div class="book-overlay"></div>
+                        <div class="book-category">{{ livre.categorie.nom }}</div>
+                    </div>
+                    <div class="p-3">
+                        <h3 class="book-title">{{ livre.titre }}</h3>
+                        <p class="book-author">{{ livre.auteur }}</p>
+                        <div class="book-meta mb-3">
+                            <div class="book-meta-item">
+                                <i class="fas fa-dollar-sign me-1"></i>
+                                <span>{{ livre.prix }}</span>
+                            </div>
+                            <div class="book-meta-item">
+                                <i class="fas fa-book-open me-1"></i>
+                                <span>{{ livre.statut }}</span>
+                            </div>
+                        </div>
+                        
+                        <!-- BOUTON pour afficher le résumé -->
+                        <button class="btn btn-outline-secondary btn-sm w-100 mb-2 toggle-resume-btn" data-id="{{ livre.id }}">
+                            Voir le résumé
+                        </button>
+
+                        <!-- Résumé caché -->
+                        <div id="resume-{{ livre.id }}" class="resume-content text-muted small" style="display: none;">
+                            {{ livre.description|linebreaks }}
+                        </div>
+
+                        <button class="btn btn-primary btn-sm w-100 btn-reserve" data-book-id="{{ livre.id }}">
+                            {% if livre.statut == 'disponible' %}Réserver{% else %}Emprunter{% endif %}
+                        </button>
+                        <a href="{% url 'ajouter_au_panier' livre.id %}" class="btn btn-primary btn-sm mt-2">Ajouter au panier</a>
+                    </div>
+                </div>
+            </div>
+
+        {% endfor %}
+    </div>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const container = document.getElementById("featured-books-container");
+    const scrollLeftBtn = document.getElementById("scroll-left");
+    const scrollRightBtn = document.getElementById("scroll-right");
+    const scrollAmount = 300 * 3; // Largeur d'un livre (300px) * 3 livres à défiler
+
+    scrollLeftBtn.addEventListener("click", () => {
+        container.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+    });
+
+    scrollRightBtn.addEventListener("click", () => {
+        container.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    });
+});
+</script>
+
+    </div>
+</div>
+
+</br></br>
+<!-- Titre de la section Statistiques -->
+<section class="stats-header text-center mb-5">
+  <h2 class="display-5 fw-bold">Statistiques de la Bibliothèque</h2>
+  <p class="text-muted fst-italic">Toutes les données clés sur notre bibliothèque en un coup d'œil</p>
+  <hr class="mx-auto" style="width: 60px; border-top: 3px solid #007bff;">
+</section>
+<!-- Section Statistiques -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row text-center">
+            <!-- Stat 1: Livres Disponibles -->
+            <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
+                <div class="d-flex flex-column align-items-center">
+                    <div class="stat-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="stat-number" id="livres_disponibles">0</div>
+                    <div class="stat-label">Livres Disponibles</div>
+                </div>
+            </div>
+
+            <!-- Stat 2: Livres Empruntés -->
+            <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
+                <div class="d-flex flex-column align-items-center">
+                    <div class="stat-icon">
+                        <i class="fas fa-book-reader"></i>
+                    </div>
+                    <div class="stat-number" id="livres_empruntes">0</div>
+                    <div class="stat-label">Livres Empruntés</div>
+                </div>
+            </div>
+
+            <!-- Stat 3: Nombre de Catégories -->
+            <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
+                <div class="d-flex flex-column align-items-center">
+                    <div class="stat-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <div class="stat-number" id="nombre_categories">0</div>
+                    <div class="stat-label">Catégories</div>
+                </div>
+            </div>
+
+            <!-- Stat 4: Nombre d'Auteurs -->
+            <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
+                <div class="d-flex flex-column align-items-center">
+                    <div class="stat-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="stat-number" id="nombre_auteurs">0</div>
+                    <div class="stat-label">Auteurs</div>
+                </div>
+            </div>
+
+            <!-- Stat 5: Membres Actifs -->
+            <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
+                <div class="d-flex flex-column align-items-center">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-number" id="membres_actifs">0</div>
+                    <div class="stat-label">Membres Actifs</div>
+                </div>
+            </div>
+
+            <!-- Stat 6: Emprunts ce mois -->
+            <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
+                <div class="d-flex flex-column align-items-center">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-number" id="emprunts_par_mois">0</div>
+                    <div class="stat-label">Emprunts ce Mois</div>
+                </div>
+            </div>
+
+            <!-- Stat 7: Prix Littéraires -->
+            <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
+                <div class="d-flex flex-column align-items-center">
+                    <div class="stat-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="stat-number" id="prix_litteraires">0</div>
+                    <div class="stat-label">Prix Littéraires</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+    <!-- Section Newsletter -->
+    <section class="newsletter-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <div class="newsletter-icon mx-auto">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h2 class="newsletter-title">Recevez nos recommandations littéraires</h2>
+                    <p class="newsletter-text mx-auto">
+                        Inscrivez-vous à notre newsletter mensuelle pour découvrir des recommandations personnalisées et les dernières nouveautés de notre bibliothèque.
+                    </p>
+                    
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <form class="d-flex flex-column flex-md-row gap-3">
+                                <input type="email" class="form-control" placeholder="Votre adresse email" required>
+                                <button type="submit" class="btn btn-primary">
+                                    S'inscrire
+                                    <i class="fas fa-arrow-right ms-2"></i>
+                                </button>
+                            </form>
+                            <p class="newsletter-legal">
+                                En vous inscrivant, vous acceptez de recevoir nos emails. Vous pourrez vous désabonner à tout moment.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pied de page -->
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <!-- À propos -->
+            <div class="col-lg-4 mb-5 mb-lg-0">
+                <div class="footer-brand">
+                    <i class="fas fa-book"></i> Bibliothèque
+                </div>
+                <p class="footer-text">
+                    Notre bibliothèque est dédiée à la promotion de la lecture et à l'accès à la connaissance pour tous.
+                </p>
+                <div class="footer-social">
+                    <a href="#" class="footer-social-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="footer-social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="footer-social-link"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="footer-social-link"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+
+            <!-- Liens rapides -->
+            <div class="col-md-4 col-lg-2 mb-4 mb-md-0">
+                <h3 class="footer-title">Liens Rapides</h3>
+                <ul class="footer-links">
+                    <li class="footer-link"><a href="#">Accueil</a></li>
+                    <li class="footer-link"><a href="#">Catalogue</a></li>
+                    <li class="footer-link"><a href="#">Nouveautés</a></li>
+                    <li class="footer-link"><a href="#">Événements</a></li>
+                    <li class="footer-link"><a href="#">À Propos</a></li>
+                    <li class="footer-link"><a href="#">Contact</a></li>
+                </ul>
+            </div>
+
+            <!-- Services -->
+            <div class="col-md-4 col-lg-2 mb-4 mb-md-0">
+                <h3 class="footer-title">Services</h3>
+                <ul class="footer-links">
+                    <li class="footer-link"><a href="#">Emprunter</a></li>
+                    <li class="footer-link"><a href="#">Réserver</a></li>
+                    <li class="footer-link"><a href="#">E-Books</a></li>
+                    <li class="footer-link"><a href="#">Ateliers</a></li>
+                    <li class="footer-link"><a href="#">Adhésion</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact -->
+            <div class="col-md-4 col-lg-4">
+                <h3 class="footer-title">Contact</h3>
+                <div class="footer-contact">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div class="footer-contact-text">
+                        123 Rue de la Bibliothèque Angre, 75001 Abidjan, Cote D'Ivoire
+                    </div>
+                </div>
+                <div class="footer-contact">
+                    <i class="fas fa-phone"></i>
+                    <div class="footer-contact-text">
+                        +225 07 57 67 62 27
+                    </div>
+                </div>
+                <div class="footer-contact">
+                    <i class="fas fa-envelope"></i>
+                    <div class="footer-contact-text">
+                        <a href="mailto:mail1biblio@bibliotheque.ci" style="color: inherit; text-decoration: none;">
+                            mail1biblio@bibliotheque.ci
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pied de page bas -->
+        <div class="footer-bottom mt-4 pt-3 border-top">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+                <div class="text-muted">
+                    &copy; 2025 Bibliothèque. Tous droits réservés.
+                </div>
+                <div class="footer-legal">
+                    <a href="#">Politique de confidentialité</a> |
+                    <a href="#">Conditions d'utilisation</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Scripts externes -->
+ <script src="{% static 'appbiblio/statistique.js' %}"></script>
+ <script src="{% static 'appbiblio/livre.js' %}"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Inclure jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Inclure CounterUp -->
+<script src="https://cdn.rawgit.com/bfintal/Counter-Up/master/jquery.counterup.min.js"></script>
+<script src="{% static 'appbiblio/statistique.js' %}"></script>
+<script src="{% static 'appbiblio/haeder.js' %}"></script>
+<script src="{% static 'appbiblio/resumerh.js' %}"></script>
+
+
+ 
+</body>
+</html>

@@ -1,0 +1,20 @@
+{% extends "admincustom/base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <h2>Tableau de bord Administrateur</h2>
+  <div class="row mt-4">
+    <div class="col-md-4">
+      <a href="{% url 'admin_livres' %}" class="btn btn-primary w-100">📚 Gérer les Livres</a>
+    </div>
+    <div class="col-md-4">
+      <a href="{% url 'emprunts_admin' %}" class="btn btn-success w-100">📦 Gérer les Emprunts</a>
+    </div>
+    <div class="col-md-4">
+      <a href="{% url 'paniers_admin' %}" class="btn btn-warning w-100">🛒 Gérer les Paniers</a>
+    </div>
+    <div class="col-md-4 mt-3">
+      <a href="{% url 'utilisateurs_admin' %}" class="btn btn-info w-100">👤 Gérer les Utilisateurs</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

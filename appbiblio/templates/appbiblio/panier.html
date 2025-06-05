@@ -1,0 +1,73 @@
+{% extends 'appbiblio/panier_base.html' %}
+{% load static %}
+{% block content %}
+<h2>Mon Panier</h2>
+
+{% if panier.livres.all %}
+  <ul class="list-group">
+    {% for livre in panier.livres.all %}
+      {% with emprunt_prevu=livre.empruntprevu_set.first %}
+        <li class="list-group-item">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <strong>{{ livre.titre }}</strong><br>
+              {% if emprunt_prevu %}
+                📅 Retrait prévu : {{ emprunt_prevu.date_prevue_retrait|date:"d/m/Y" }}<br>
+                📅 Retour prévu : {{ emprunt_prevu.date_prevue_retour|date:"d/m/Y" }}
+              {% else %}
+                <p>
+                  📅 Retrait prévu : <span class="date-retrait">chargement...</span><br>
+                  📅 Limite de retrait : <span class="date-limite-retrait">chargement...</span><br>
+                  📅 Retour prévu : <span class="date-retour">chargement...</span>
+                </p>
+              {% endif %}
+            </div>
+            <form method="POST" action="{% url 'supprimer_panier' livre.id %}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet article ?');">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+            </form>
+          </div>
+        </li>
+      {% endwith %}
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>Votre panier est vide.</p>
+{% endif %}
+
+<form id="form-valider" method="post" action="{% url 'home' %}">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-success mt-3">Valider l'emprunt</button>
+</form>
+
+<!-- Message Bootstrap caché -->
+<div id="message-validation" class="alert alert-success mt-3" style="display:none;" role="alert">
+  ✅ Votre emprunt a été validé avec succès !
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    fetch('/dates-prevision/')
+        .then(response => response.json())
+        .then(data => {
+            document.querySelectorAll('.date-retrait').forEach(el => el.textContent = data.date_retrait);
+            document.querySelectorAll('.date-limite-retrait').forEach(el => el.textContent = data.date_limite_retrait);
+            document.querySelectorAll('.date-retour').forEach(el => el.textContent = data.date_retour);
+        });
+
+    // Gestion affichage message avant soumission formulaire
+    document.getElementById('form-valider').addEventListener('submit', function(event) {
+        event.preventDefault();  // Empêche l'envoi immédiat
+
+        const msg = document.getElementById('message-validation');
+        msg.style.display = 'block';  // Affiche le message
+
+        // Soumettre après 2 secondes
+        setTimeout(() => {
+            event.target.submit();
+        }, 2000);
+    });
+});
+</script>
+
+{% endblock %}
