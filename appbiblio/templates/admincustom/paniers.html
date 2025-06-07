@@ -2,34 +2,237 @@
 {% load static %}
 {% block content %}
 <div class="container mt-5">
-  <h2 class="mb-4">Gestion des Paniers</h2>
-  <table class="table table-bordered table-striped">
-    <thead class="table-dark">
-      <tr>
-        <th>Utilisateur</th>
-        <th>Livres dans le Panier</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for panier in paniers %}
-      <tr>
-        <td>{{ panier.utilisateur.username }}</td>
-        <td>
-          {% if panier.livres.all %}
-            <ul>
-              {% for livre in panier.livres.all %}
-              <li>{{ livre.titre }}</li>
-              {% endfor %}
-            </ul>
-          {% else %}
-            Aucun livre
-          {% endif %}
-        </td>
-      </tr>
-      {% empty %}
-      <tr><td colspan="2">Aucun panier trouvé.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+    <h2 class="mb-4">Gestion des Paniers</h2>
+    
+    <!-- Statistiques en tête -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white text-center p-3">
+                <h5 class="mb-0">Paniers Actifs</h5>
+                <h3 class="mb-0">{{ paniers.count }}</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white text-center p-3">
+                <h5 class="mb-0">Emprunts Validés</h5>
+                <h3 class="mb-0">{{ emprunts_valides.count }}</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark text-center p-3">
+                <h5 class="mb-0">En Attente</h5>
+                <h3 class="mb-0">{{ emprunts_attente.count }}</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white text-center p-3">
+                <h5 class="mb-0">Livres Demandés</h5>
+                <h3 class="mb-0">{{ total_livres }}</h3>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Barre de recherche et filtres -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Rechercher un utilisateur ou un livre...">
+                        <button class="btn btn-primary">Rechercher</button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <select class="form-select">
+                        <option>Tous les statuts</option>
+                        <option>En attente</option>
+                        <option>Validé</option>
+                        <option>Refusé</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tableau des paniers -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Utilisateur</th>
+                            <th>Livres Demandés</th>
+                            <th>Date Demande</th>
+                            <th>Statut</th>
+                            <th>Date Emprunt</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for panier in paniers %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                        {{ panier.utilisateur.username|first|upper }}
+                                    </div>
+                                    <div>
+                                        <strong>{{ panier.utilisateur.username }}</strong>
+                                        <div class="text-muted small">{{ panier.utilisateur.email }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if panier.livres.all %}
+                                    <ul class="mb-0">
+                                        {% for livre in panier.livres.all %}
+                                        <li>
+                                            {{ livre.titre }}
+                                            <span class="badge bg-light text-dark">{{ livre.auteur }}</span>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <span class="text-muted">Aucun livre</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ panier.date_creation|date:"d/m/Y" }}</td>
+                            <td>
+                                {% if panier.statut == 'valide' %}
+                                    <span class="badge bg-success">Validé</span>
+                                {% elif panier.statut == 'attente' %}
+                                    <span class="badge bg-warning">En attente</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Refusé</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if panier.date_emprunt %}
+                                    <input type="date" class="form-control form-control-sm" value="{{ panier.date_emprunt|date:'Y-m-d' }}">
+                                {% else %}
+                                    <input type="date" class="form-control form-control-sm" value="{% now 'Y-m-d' %}">
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-success" data-bs-toggle="tooltip" title="Valider l'emprunt">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" data-bs-toggle="tooltip" title="Refuser l'emprunt">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-primary" data-bs-toggle="tooltip" title="Modifier">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4">
+                                <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                                <h5>Aucun panier trouvé</h5>
+                                <p class="text-muted">Aucun utilisateur n'a actuellement de panier actif</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Précédent</a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">Suivant</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    
+    <!-- Modal de validation -->
+    <div class="modal fade" id="validationModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">Valider l'emprunt</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Êtes-vous sûr de vouloir valider cet emprunt ?</p>
+                    <div class="mb-3">
+                        <label class="form-label">Date de retour prévue</label>
+                        <input type="date" class="form-control" value="{% now 'Y-m-d' %}">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-success">Confirmer</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    .avatar {
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    .table-hover tbody tr:hover {
+        background-color: rgba(67, 97, 238, 0.05);
+    }
+    .badge {
+        font-weight: 500;
+        padding: 0.5em 0.8em;
+    }
+    .btn-group .btn {
+        border-radius: 4px !important;
+        margin-right: 5px;
+    }
+    ul {
+        padding-left: 1.5rem;
+    }
+    .card {
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .table th {
+        font-weight: 600;
+    }
+</style>
+
+<script>
+    // Initialisation des tooltips Bootstrap
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+        
+        // Gestion des boutons de validation
+        document.querySelectorAll('.btn-success').forEach(button => {
+            button.addEventListener('click', function() {
+                const modal = new bootstrap.Modal(document.getElementById('validationModal'))
+                modal.show();
+            });
+        });
+        
+        // Gestion des dates d'emprunt
+        document.querySelectorAll('input[type="date"]').forEach(input => {
+            if (!input.value) {
+                const today = new Date().toISOString().split('T')[0];
+                input.value = today;
+            }
+        });
+    });
+</script>
 {% endblock %}

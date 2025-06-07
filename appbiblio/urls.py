@@ -11,7 +11,7 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('register/', views.register, name='register'),
 
-    path('', views.home, name='home'),  # accessible via '/'
+    path('', views.home, name='home'),  
     path('home/', views.home, name='home'),
 
     path('categorie/<int:categorie_id>/', views.categorie_detail, name='categorie_detail'),
@@ -37,6 +37,9 @@ urlpatterns = [
     path('gestion-admin/livres/', views.livres_admin, name='livres_admin'),
     path('admin-custom/', views.dashboard, name='admin_dashboard'),
     path('admin-custom/livres/', views.liste_livres, name='admin_livres'),
+    
+    path('ajouter-au-panier/<int:livre_id>/', views.ajouter_au_panier, name='ajouter_au_panier'),
+    path('panier-count/', views.panier_count, name='panier_count'),
 
     path('admin-biblio/', views.gestion_admin, name='gestion_admin'),
     path('admin-biblio/emprunts/', views.emprunts_admin, name='emprunts_admin'),

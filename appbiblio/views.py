@@ -1,11 +1,13 @@
 from django.contrib.auth import login
 from django.db import models, transaction
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django import forms
+from django.db.models import Count
 from .forms import UtilisateurForm
 
 from django.contrib.auth.models import User
@@ -32,24 +34,38 @@ class CustomUserCreationForm(UserCreationForm):
         fields = ['username', 'email', 'first_name', 'last_name', 'password1', 'password2']
 
 # Vue pour l'accueil
+# views.py
 @login_required
 def home(request):
-    categories = Categorie.objects.all()
+    # Correction du comptage des livres par catégorie
+    categories = Categorie.objects.annotate(
+        nombre_livres=Count('livres')  # Utilisation du nom correct du modèle
+    ).all()
 
-    # Calculer le nombre de livres pour chaque catégorie
-    for categorie in categories:
-        categorie.nombre_livres = Livre.objects.filter(categorie=categorie).count()
-
+    # Récupération des livres
     livres = Livre.objects.all()
+
+    # Calcul des statistiques
+    livres_disponibles = Livre.objects.filter(statut='disponible').count()
+    livres_empruntes = Livre.objects.filter(statut='emprunté').count()
+    nombre_categories = Categorie.objects.count()
+    membres_actifs = User.objects.filter(is_active=True).count()
+    nombre_auteurs = Livre.objects.values('auteur').distinct().count()
+    emprunts_par_mois = Emprunt.objects.filter(
+        date_retrait__month=timezone.now().month
+    ).count()
 
     # Passer les données au template
     return render(request, 'appbiblio/home.html', {
         'categories': categories,
         'livres': livres,
-        'livres_disponibles': livres.filter(statut='disponible').count()  # Nombre de livres disponibles
+        'livres_disponibles': livres_disponibles,
+        'livres_empruntes': livres_empruntes,
+        'nombre_categories': nombre_categories,
+        'membres_actifs': membres_actifs,
+        'nombre_auteurs': nombre_auteurs,
+        'emprunts_par_mois': emprunts_par_mois
     })
-
-
 def livres_disponibles_ajax(request):
     # Calculer le nombre de livres disponibles
     livres_disponibles = Livre.objects.filter(statut='disponible').count()
@@ -158,13 +174,48 @@ def stats_view(request):
 
 
 
+
+
+
 @login_required
+@csrf_exempt
 def ajouter_au_panier(request, livre_id):
     livre = get_object_or_404(Livre, id=livre_id)
-    panier, _ = Panier.objects.get_or_create(utilisateur=request.user)
-    panier.livres.add(livre)
-    messages.success(request, f"Le livre '{livre.titre}' a été ajouté au panier.")
-    return redirect('panier')
+    panier, created = Panier.objects.get_or_create(utilisateur=request.user)
+    
+    # Vérifier si le livre est déjà dans le panier
+    if panier.livres.filter(id=livre_id).exists():
+        return JsonResponse({
+            'success': False, 
+            'message': 'Ce livre est déjà dans votre panier'
+        })
+    
+    # Si c'est une confirmation, ajouter au panier
+    if request.method == 'POST':
+        # Ajouter le livre au panier
+        panier.livres.add(livre)
+        
+        # Créer un emprunt prévu pour ce livre
+        date_retrait = timezone.now()
+        date_limite_retrait = date_retrait + timedelta(days=2)
+        date_retour = date_retrait + timedelta(days=14)
+        
+        EmpruntPrevu.objects.create(
+            panier=panier,
+            livre=livre,
+            date_prevue_retrait=date_retrait,
+            date_limite_retrait=date_limite_retrait,
+            date_prevue_retour=date_retour
+        )
+        
+        return JsonResponse({'success': True})
+    
+    # Si c'est une demande de confirmation
+    return JsonResponse({
+        'confirmation': True,
+        'message': f'Voulez-vous ajouter "{livre.titre}" à votre panier?'
+    })
+
 
 @login_required
 def voir_panier(request):
@@ -177,38 +228,37 @@ def supprimer_panier(request, livre_id):
     livre = get_object_or_404(Livre, id=livre_id)
     panier.livres.remove(livre)
     messages.info(request, f"Le livre '{livre.titre}' a été retiré du panier.")
-    return redirect('voir_panier')
+    return redirect('panier')
 
 
 
 @login_required
 def valider_panier(request):
     panier = get_object_or_404(Panier, utilisateur=request.user)
-    emprunts_prevus = panier.get_emprunts_prevus()
-
-    if not emprunts_prevus.exists():
-        messages.warning(request, "Aucun emprunt prévu à valider.")
-        return redirect('voir_panier')
-
-    for emprunt_prevu in emprunts_prevus:
-        livre = emprunt_prevu.livre
-        if livre.statut == 'disponible':
-            with transaction.atomic():
-                Emprunt.objects.create(
-                    utilisateur=request.user,
-                    livre=livre,
-                    date_retrait=emprunt_prevu.date_prevue_retrait,
-                    date_retour=emprunt_prevu.date_prevue_retour,
-                    date_limite_retrait=emprunt_prevu.date_prevue_retrait
-                )
-                livre.statut = 'emprunte'
-                livre.save()
-            emprunt_prevu.delete()
-
+    
+    # Créer un emprunt pour chaque livre du panier
+    for livre in panier.livres.all():
+        emprunt_prevu = get_object_or_404(EmpruntPrevu, panier=panier, livre=livre)
+        
+        Emprunt.objects.create(
+            utilisateur=request.user,
+            livre=livre,
+            date_emprunt=emprunt_prevu.date_prevue_retrait,
+            date_retour_prevue=emprunt_prevu.date_prevue_retour
+        )
+        
+        # Mettre à jour le statut du livre
+        livre.statut = 'emprunté'
+        livre.save()
+        
+        # Supprimer l'emprunt prévu
+        emprunt_prevu.delete()
+    
+    # Vider le panier
     panier.livres.clear()
-    messages.success(request, "Les emprunts ont été validés avec succès.")
-    return redirect('voir_panier')
-
+    
+    messages.success(request, "Votre emprunt a été validé avec succès !")
+    return redirect('home')
 
 
 
@@ -264,7 +314,19 @@ def get_dates_prevision(request):
         'date_limite_retrait': date_limite_retrait.strftime('%Y-%m-%d'),
         'date_retour': date_retour.strftime('%Y-%m-%d')
     })
+from django.utils import timezone
+from datetime import timedelta
 
+def dates_prevision(request):
+    date_retrait = timezone.now().strftime("%d/%m/%Y")
+    date_limite_retrait = (timezone.now() + timedelta(days=2)).strftime("%d/%m/%Y")
+    date_retour = (timezone.now() + timedelta(days=14)).strftime("%d/%m/%Y")
+    
+    return JsonResponse({
+        'date_retrait': date_retrait,
+        'date_limite_retrait': date_limite_retrait,
+        'date_retour': date_retour
+    })
 
 
 
@@ -345,9 +407,30 @@ from django.contrib.auth.models import User
 
 @login_required
 def utilisateurs_admin(request):
-    utilisateurs = User.objects.all()
+    utilisateurs = User.objects.annotate(nb_livres=Count('emprunt__livre')).all()
     return render(request, 'admincustom/utilisateurs.html', {'utilisateurs': utilisateurs})
 
+
+@login_required
+def livre_dans_panier(request, livre_id):
+    """Vérifie si un livre est déjà dans le panier de l'utilisateur"""
+    panier, created = Panier.objects.get_or_create(utilisateur=request.user)
+    in_cart = panier.livres.filter(id=livre_id).exists()
+    return JsonResponse({'in_cart': in_cart})
+
+@login_required
+def panier_count(request):
+    """Renvoie le nombre d'articles dans le panier"""
+    panier, created = Panier.objects.get_or_create(utilisateur=request.user)
+    count = panier.livres.count()
+    return JsonResponse({'count': count})
+
+# views.py
+@login_required
+def panier_count(request):
+    panier, created = Panier.objects.get_or_create(utilisateur=request.user)
+    count = panier.livres.count()
+    return JsonResponse({'count': count})
 
 @login_required
 def ajouter_livre(request):

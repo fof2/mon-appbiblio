@@ -1,73 +1,240 @@
 {% extends 'appbiblio/panier_base.html' %}
 {% load static %}
 {% block content %}
-<h2>Mon Panier</h2>
-
-{% if panier.livres.all %}
-  <ul class="list-group">
-    {% for livre in panier.livres.all %}
-      {% with emprunt_prevu=livre.empruntprevu_set.first %}
-        <li class="list-group-item">
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <strong>{{ livre.titre }}</strong><br>
-              {% if emprunt_prevu %}
-                📅 Retrait prévu : {{ emprunt_prevu.date_prevue_retrait|date:"d/m/Y" }}<br>
-                📅 Retour prévu : {{ emprunt_prevu.date_prevue_retour|date:"d/m/Y" }}
-              {% else %}
-                <p>
-                  📅 Retrait prévu : <span class="date-retrait">chargement...</span><br>
-                  📅 Limite de retrait : <span class="date-limite-retrait">chargement...</span><br>
-                  📅 Retour prévu : <span class="date-retour">chargement...</span>
-                </p>
-              {% endif %}
+<div class="container py-5">
+    <div class="card border-0 shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">Mon Panier d'Emprunt</h2>
+                <span class="badge bg-light text-primary fs-6">
+                    <i class="fas fa-book me-1"></i>
+                    <span id="cart-count">{{ panier.livres.count }}</span> livre(s)
+                </span>
             </div>
-            <form method="POST" action="{% url 'supprimer_panier' livre.id %}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet article ?');">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
-            </form>
-          </div>
-        </li>
-      {% endwith %}
-    {% endfor %}
-  </ul>
-{% else %}
-  <p>Votre panier est vide.</p>
-{% endif %}
-
-<form id="form-valider" method="post" action="{% url 'home' %}">
-  {% csrf_token %}
-  <button type="submit" class="btn btn-success mt-3">Valider l'emprunt</button>
-</form>
-
-<!-- Message Bootstrap caché -->
-<div id="message-validation" class="alert alert-success mt-3" style="display:none;" role="alert">
-  ✅ Votre emprunt a été validé avec succès !
+        </div>
+        
+        <div class="card-body">
+            {% if panier.livres.all %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" style="width: 40%">Livre</th>
+                            <th scope="col">Dates d'emprunt</th>
+                            <th scope="col" class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for livre in panier.livres.all %}
+                        {% with emprunt_prevu=livre.empruntprevu_set.first %}
+                        <tr class="position-relative">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <div class="book-cover-mini bg-light border rounded">
+                                            {% if livre.couverture_img %}
+                                            <img src="{{ livre.couverture_img }}" alt="Couverture de {{ livre.titre }}" class="img-fluid">
+                                            {% else %}
+                                            <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                                                <i class="fas fa-book fa-2x"></i>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <strong class="d-block">{{ livre.titre }}</strong>
+                                        <small class="text-muted">Par {{ livre.auteur }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if emprunt_prevu %}
+                                <div class="d-flex flex-column">
+                                    <div class="d-flex align-items-center mb-1">
+                                        <i class="fas fa-calendar-check me-2 text-primary"></i>
+                                        <span>Retrait prévu: {{ emprunt_prevu.date_prevue_retrait|date:"d/m/Y" }}</span>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-1">
+                                        <i class="fas fa-hourglass-half me-2 text-warning"></i>
+                                        <span>Limite: {{ emprunt_prevu.date_limite_retrait|date:"d/m/Y" }}</span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-calendar-times me-2 text-info"></i>
+                                        <span>Retour prévu: {{ emprunt_prevu.date_prevue_retour|date:"d/m/Y" }}</span>
+                                    </div>
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-dollar-sign me-1"></i>
+                                    <span>Prix fix : {{ livre.prix }}</span>
+                                </div>
+                                </div>
+                                {% else %}
+                                <div class="d-flex flex-column">
+                                    <div class="d-flex align-items-center mb-1">
+                                        <i class="fas fa-calendar-check me-2 text-primary"></i>
+                                        <span class="date-retrait">chargement...</span>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-1">
+                                        <i class="fas fa-hourglass-half me-2 text-warning"></i>
+                                        <span class="date-limite-retrait">chargement...</span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-calendar-times me-2 text-info"></i>
+                                        <span class="date-retour">chargement...</span>
+                                    </div>
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-dollar-sign me-1"></i>
+                                    <span>Prix fix : {{ livre.prix }}</span>
+                                </div>
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <form id="form-suprimer"  method="POST" action="{% url 'supprimer_panier' livre.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash-alt me-1"></i> Supprimer
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endwith %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <a href="{% url 'home' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Continuer mes emprunts
+                </a>
+                
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <div class="empty-cart-icon mb-4">
+                    <i class="fas fa-shopping-cart fa-4x text-muted"></i>
+                </div>
+                <h3 class="text-muted mb-3">Votre panier est vide</h3>
+                <p class="text-muted mb-4">Commencez par ajouter des livres à votre panier</p>
+                <a href="{% url 'home' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-book me-2"></i>Parcourir la bibliothèque
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
 </div>
+
+<!-- Message de validation -->
+<div id="message-validation" class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="validation-toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-check-circle me-2"></i> Votre emprunt a été suprimer avec succès !
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    
+    .card-header {
+        border-radius: 15px 15px 0 0 !important;
+    }
+    
+    .book-cover-mini {
+        width: 60px;
+        height: 80px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .table th {
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(78, 115, 223, 0.05);
+        transform: translateY(-2px);
+        transition: transform 0.2s ease;
+    }
+    
+    .empty-cart-icon {
+        opacity: 0.2;
+    }
+    
+    .btn-success {
+        background-color: #1cc88a;
+        border-color: #1cc88a;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-success:hover {
+        background-color: #17a673;
+        border-color: #17a673;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .btn-outline-danger {
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-danger:hover {
+        transform: scale(1.05);
+    }
+    
+    .toast {
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    }
+</style>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+    // Charger les dates prévisionnelles
     fetch('/dates-prevision/')
         .then(response => response.json())
         .then(data => {
-            document.querySelectorAll('.date-retrait').forEach(el => el.textContent = data.date_retrait);
-            document.querySelectorAll('.date-limite-retrait').forEach(el => el.textContent = data.date_limite_retrait);
-            document.querySelectorAll('.date-retour').forEach(el => el.textContent = data.date_retour);
-        });
+            document.querySelectorAll('.date-retrait').forEach(el => el.textContent = "Retrait prévu: " + data.date_retrait);
+            document.querySelectorAll('.date-limite-retrait').forEach(el => el.textContent = "Limite: " + data.date_limite_retrait);
+            document.querySelectorAll('.date-retour').forEach(el => el.textContent = "Retour prévu: " + data.date_retour);
+          });
 
     // Gestion affichage message avant soumission formulaire
-    document.getElementById('form-valider').addEventListener('submit', function(event) {
+    document.getElementById('form-suprimer').addEventListener('submit', function(event) {
         event.preventDefault();  // Empêche l'envoi immédiat
-
-        const msg = document.getElementById('message-validation');
-        msg.style.display = 'block';  // Affiche le message
-
+        
+        // Afficher le toast de validation
+        const toastEl = document.getElementById('validation-toast');
+        const toast = new bootstrap.Toast(toastEl);
+        toast.show();
+        
         // Soumettre après 2 secondes
         setTimeout(() => {
             event.target.submit();
         }, 2000);
     });
+    
+    // Animation des lignes du tableau
+    document.querySelectorAll('tbody tr').forEach(row => {
+        row.style.opacity = '0';
+        setTimeout(() => {
+            row.style.transition = 'opacity 0.5s ease';
+            row.style.opacity = '1';
+        }, 100 * row.rowIndex);
+    });
 });
 </script>
-
 {% endblock %}

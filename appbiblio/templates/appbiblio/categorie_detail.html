@@ -18,77 +18,530 @@
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #4e54c8;
+            --secondary-color: #8f94fb;
+            --light-bg: #f8f9fa;
+            --dark-text: #333;
+            --light-text: #666;
+            --white: #ffffff;
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-top: 0;
+        }
+        
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: var(--white);
+            padding: 2.5rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .category-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .book-count {
+            font-size: 1.2rem;
+            opacity: 0.85;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .book-scroller {
+            display: flex;
+            overflow-x: auto;
+            padding: 20px 10px;
+            scroll-behavior: smooth;
+            gap: 25px;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        .book-scroller::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .book-item {
+            flex: 0 0 auto;
+            width: 280px;
+            transition: transform 0.3s ease;
+        }
+        
+        .book-item:hover {
+            transform: translateY(-8px);
+        }
+        
+        .book-card {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: var(--white);
+            transition: all 0.3s ease;
+            border: none;
+        }
+        
+        .book-card:hover {
+            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+        }
+        
+        .book-cover {
+            height: 320px;
+            overflow: hidden;
+            position: relative;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .book-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .book-card:hover .book-cover img {
+            transform: scale(1.05);
+        }
+        
+        .book-content {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .book-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--dark-text);
+            height: 60px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        
+        .book-summary {
+            color: var(--light-text);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+        
+        .book-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        
+        .book-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .book-status {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        
+        .status-available {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .status-unavailable {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .btn-reserve {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            padding: 8px;
+            color: white;
+        }
+        
+        .btn-reserve:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(142, 148, 251, 0.4);
+        }
+        
+        .btn-cart {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            color: var(--dark-text);
+            font-weight: 500;
+            padding: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-cart:hover {
+            background: #e9ecef;
+            transform: translateY(-1px);
+        }
+        
+        .btn-cart-disabled {
+            background: #f0f0f0;
+            color: #999;
+            cursor: not-allowed;
+        }
+        
+        .btn-cart-disabled:hover {
+            background: #f0f0f0;
+            transform: none;
+        }
+        
+        .scroll-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .scroll-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .scroll-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            background: #f8f9fa;
+            color: #6c757d;
+        }
+        
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: var(--dark-text);
+            position: relative;
+            padding-bottom: 10px;
+            font-size: 1.8rem;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border-radius: 3px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: #e0e0e0;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state h3 {
+            color: #6c757d;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .navigation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 0 15px;
+        }
+        
+        .back-link {
+            display: flex;
+            align-items: center;
+            color: var(--primary-color);
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link i {
+            margin-right: 8px;
+            transition: transform 0.3s ease;
+        }
+        
+        .back-link:hover {
+            color: var(--secondary-color);
+        }
+        
+        .back-link:hover i {
+            transform: translateX(-3px);
+        }
+        
+        @media (max-width: 768px) {
+            .category-title {
+                font-size: 2.2rem;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+            
+            .book-item {
+                width: 260px;
+            }
+            
+            .navigation-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+        
+        /* Modal de confirmation */
+        .confirmation-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .confirmation-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transform: translateY(20px);
+            transition: transform 0.4s ease;
+        }
+        
+        .confirmation-modal.active .modal-content {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border-radius: 15px 15px 0 0;
+            text-align: center;
+        }
+        
+        .modal-header i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .modal-body {
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .modal-footer {
+            padding: 0 30px 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .modal-btn {
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-confirm {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+        }
+        
+        .modal-confirm:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(78, 84, 200, 0.4);
+        }
+        
+        .modal-cancel {
+            background: #f8f9fa;
+            color: #333;
+            border: 1px solid #dee2e6;
+        }
+        
+        .modal-cancel:hover {
+            background: #e9ecef;
+        }
+    </style>
 </head>
 <body>
 {% include 'appbiblio/navbar.html' %}
 
-<div class="container mt-5 pt-5">
-    <h1>Catégorie : {{ categorie.nom }}</h1>
-    <p>{{ livres|length }} livre{{ livres|length|pluralize }} dans cette catégorie.</p>
+<!-- Modal de confirmation -->
+<div class="confirmation-modal" id="confirmationModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <i class="fas fa-shopping-cart"></i>
+            <h3>Ajouter au panier</h3>
+        </div>
+        <div class="modal-body">
+            <p id="modalMessage">Êtes-vous sûr de vouloir ajouter ce livre à votre panier ?</p>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn modal-cancel" id="cancelBtn">Annuler</button>
+            <button class="modal-btn modal-confirm" id="confirmBtn">Confirmer</button>
+        </div>
+    </div>
 </div>
 
-<!-- Section Livres en Vedette -->
-<section class="featured-books">
-    <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="section-title mb-0" id="featured-title">Livres en Vedette</h2>
-            <div class="d-flex gap-2">
-                <button id="scroll-left" class="scroll-btn disabled">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button id="scroll-right" class="scroll-btn">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            </div>
+<!-- En-tête de la catégorie -->
+<div class="page-header">
+    <div class="container text-center">
+        <h1 class="category-title">{{ categorie.nom }}</h1>
+        <p class="book-count">{{ livres|length }} livre{{ livres|length|pluralize }} disponibles dans cette catégorie</p>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="navigation-header">
+        <a href="{% url 'home' %}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Retour à l'accueil
+        </a>
+        <div class="d-flex gap-2">
+            <button id="scroll-left" class="scroll-btn disabled">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button id="scroll-right" class="scroll-btn">
+                <i class="fas fa-chevron-right"></i>
+            </button>
         </div>
+    </div>
+
+    <!-- Section Livres -->
+    <section class="mb-5">
+        <h2 class="section-title mb-4">Livres en Vedette</h2>
 
         {% if livres %}
-        <div class="row">
+        <div class="book-scroller" id="book-scroller">
             {% for livre in livres %}
-            <div class="col-md-4 mb-4">
-                <div class="book-card border rounded shadow-sm p-3 h-100">
-                    <div class="book-cover mb-3">
-                        <img src="{{ livre.couverture.url }}" alt="Couverture de {{ livre.titre }}" 
-                            style="max-height: 300px; width: auto;" class="img-fluid rounded"
-                            onerror="this.onerror=null;this.src='/media/appbiblio/default.jpg';" />
-                        <div class="book-overlay"></div>
-                        <div class="book-category">{{ livre.categorie.nom }}</div>
-                    </div>
-                    <div class="p-3">
+            <div class="book-item">
+                <div class="book-card">
+                        <div class="book-cover">
+                            <img src="{{ livre.couverture_img }}" alt="Couverture de {{ livre.titre }}">
+                            <div class="book-overlay"></div>
+                            <div class="book-category">{{ livre.categorie.nom }}</div>
+                        </div>
+                    <div class="book-content">
                         <h3 class="book-title">{{ livre.titre }}</h3>
                         {% with livre.description|default:"Pas de résumé disponible." as resume %}
-                        <p class="book-summary collapsed" data-fulltext="{{ resume|escapejs }}">
-                            {{ resume|slice:":200" }}{% if resume|length > 200 %}...{% endif %}
+                        <p class="book-summary">
+                            {{ resume|slice:":150" }}{% if resume|length > 150 %}...{% endif %}
                         </p>
-                        {% if resume|length > 200 %}
-                            <button class="btn btn-link btn-sm toggle-summary">Voir plus</button>
-                        {% endif %}
                         {% endwith %}
-                        <button class="btn btn-link btn-sm toggle-summary">Voir plus</button>
-                        <div class="book-meta mb-3">
+                        <div class="book-meta">
                             <div class="book-meta-item">
-                                <i class="fas fa-dollar-sign me-1"></i>
-                                <span>{{ livre.prix }}</span>
+                                <i class="fas fa-dollar-sign text-primary"></i>
+                                <span>{{ livre.prix|default:"Gratuit" }}</span>
                             </div>
                             <div class="book-meta-item">
-                                <i class="fas fa-book-open me-1"></i>
-                                <span>{{ livre.statut }}</span>
+                                <span class="book-status {% if livre.statut == 'disponible' %}status-available{% else %}status-unavailable{% endif %}">
+                                    {{ livre.statut }}
+                                </span>
                             </div>
                         </div>
-                        <button class="btn btn-primary btn-sm w-100 btn-reserve" data-book-id="{{ livre.id }}">
-                            {% if livre.statut == 'disponible' %}Réserver{% else %}Emprunter{% endif %}
-                        </button>
-                        <a href="{% url 'ajouter_au_panier' livre.id %}" class="btn btn-primary btn-sm mt-2">Ajouter au panier</a>
+                        <div class="action-buttons">
+                            <button class="btn btn-reserve" data-book-id="{{ livre.id }}">
+                                <i class="fas fa-bookmark me-1"></i> 
+                                {% if livre.statut == 'disponible' %}Réserver{% else %}Emprunter{% endif %}
+                            </button>
+                            <button class="btn btn-cart add-to-cart-btn" 
+                                    data-book-id="{{ livre.id }}" 
+                                    data-book-title="{{ livre.titre }}">
+                                <i class="fas fa-shopping-cart me-1"></i> Ajouter au panier
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
         {% else %}
-        <p class="text-muted">Aucun livre disponible dans cette catégorie pour le moment.</p>
+        <div class="empty-state">
+            <i class="fas fa-book-open"></i>
+            <h3>Aucun livre disponible</h3>
+            <p class="text-muted">Cette catégorie ne contient aucun livre pour le moment.</p>
+            <a href="{% url 'home' %}" class="btn btn-primary mt-2">Parcourir d'autres catégories</a>
+        </div>
         {% endif %}
-    </div>
-</section>
+    </section>
+</div>
 
 {% include 'appbiblio/footer.html' %}
 
@@ -100,5 +553,247 @@
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.rawgit.com/bfintal/Counter-Up/master/jquery.counterup.min.js"></script>
+
+<script>
+    // Gestion du panier avec sessionStorage
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialiser le panier dans sessionStorage s'il n'existe pas
+        if (!sessionStorage.getItem('cart')) {
+            sessionStorage.setItem('cart', JSON.stringify({}));
+        }
+        
+        // Mettre à jour les boutons en fonction du panier
+        updateCartButtons();
+        
+        // Script pour le défilement horizontal
+        const scroller = document.getElementById('book-scroller');
+        const scrollLeftBtn = document.getElementById('scroll-left');
+        const scrollRightBtn = document.getElementById('scroll-right');
+        
+        // Fonction pour mettre à jour l'état des boutons
+        function updateScrollButtons() {
+            scrollLeftBtn.disabled = (scroller.scrollLeft <= 0);
+            scrollRightBtn.disabled = (scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 1);
+        }
+        
+        // Écouteurs d'événements pour les boutons
+        scrollLeftBtn.addEventListener('click', () => {
+            scroller.scrollBy({ left: -300, behavior: 'smooth' });
+        });
+        
+        scrollRightBtn.addEventListener('click', () => {
+            scroller.scrollBy({ left: 300, behavior: 'smooth' });
+        });
+        
+        // Mettre à jour les boutons au chargement et lors du défilement
+        scroller.addEventListener('scroll', updateScrollButtons);
+        window.addEventListener('resize', updateScrollButtons);
+        updateScrollButtons();
+        
+        // Animation d'apparition des livres
+        const bookItems = document.querySelectorAll('.book-item');
+        bookItems.forEach((item, index) => {
+            setTimeout(() => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(20px)';
+                item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                
+                setTimeout(() => {
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, 100);
+            }, index * 100);
+        });
+        
+        // Gestion des boutons d'ajout au panier
+        const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+        const modal = document.getElementById('confirmationModal');
+        const modalMessage = document.getElementById('modalMessage');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const confirmBtn = document.getElementById('confirmBtn');
+        
+        let currentBookId = null;
+        let currentBookTitle = null;
+        let currentButton = null;
+        
+        addToCartButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const bookId = this.getAttribute('data-book-id');
+                const bookTitle = this.getAttribute('data-book-title');
+                
+                // Vérifier si le livre est déjà dans le panier
+                const cart = JSON.parse(sessionStorage.getItem('cart'));
+                if (cart[bookId]) {
+                    alert(`"${bookTitle}" est déjà dans votre panier.`);
+                    return;
+                }
+                
+                // Ouvrir la modal de confirmation
+                currentBookId = bookId;
+                currentBookTitle = bookTitle;
+                currentButton = this;
+                modalMessage.textContent = `Êtes-vous sûr de vouloir ajouter "${bookTitle}" à votre panier ?`;
+                modal.classList.add('active');
+            });
+        });
+        
+        // Bouton d'annulation dans la modal
+        cancelBtn.addEventListener('click', function() {
+            modal.classList.remove('active');
+        });
+        
+        // Bouton de confirmation dans la modal
+        confirmBtn.addEventListener('click', function() {
+            modal.classList.remove('active');
+            
+            if (currentBookId && currentBookTitle && currentButton) {
+                // Mettre à jour le sessionStorage
+                const cart = JSON.parse(sessionStorage.getItem('cart'));
+                cart[currentBookId] = {
+                    id: currentBookId,
+                    title: currentBookTitle,
+                    added_at: new Date().toISOString()
+                };
+                sessionStorage.setItem('cart', JSON.stringify(cart));
+                
+                // Mettre à jour le bouton
+                currentButton.innerHTML = '<i class="fas fa-check me-1"></i> Ajouté au panier';
+                currentButton.classList.add('btn-cart-disabled');
+                currentButton.disabled = true;
+                
+                // Mettre à jour le compteur du panier dans la navbar
+                updateCartCounter();
+                
+                // Message de succès
+                setTimeout(() => {
+                    alert(`"${currentBookTitle}" a été ajouté à votre panier avec succès !`);
+                }, 300);
+            }
+        });
+        
+        // Fermer la modal en cliquant à l'extérieur
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+            }
+        });
+    });
+    
+    // Mettre à jour l'état des boutons "Ajouter au panier"
+    function updateCartButtons() {
+        const cart = JSON.parse(sessionStorage.getItem('cart'));
+        const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+        
+        addToCartButtons.forEach(button => {
+            const bookId = button.getAttribute('data-book-id');
+            
+            if (cart[bookId]) {
+                button.innerHTML = '<i class="fas fa-check me-1"></i> Ajouté au panier';
+                button.classList.add('btn-cart-disabled');
+                button.disabled = true;
+            }
+        });
+    }
+    
+    // Mettre à jour le compteur du panier dans la navbar
+    function updateCartCounter() {
+        const cart = JSON.parse(sessionStorage.getItem('cart'));
+        const cartCount = Object.keys(cart).length;
+        const cartCounter = document.getElementById('cart-count');
+        
+        if (cartCounter) {
+            cartCounter.textContent = cartCount;
+        }
+    }
+    
+    // Animation pour le bouton "Réserver"
+    const reserveButtons = document.querySelectorAll('.btn-reserve');
+    reserveButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Traitement...';
+            
+            // Simulation d'une requête
+            setTimeout(() => {
+                this.innerHTML = originalText;
+                this.classList.remove('btn-reserve');
+                this.classList.add('btn-success');
+                this.innerHTML = '<i class="fas fa-check me-1"></i> Réservé!';
+            }, 1500);
+        });
+    });
+</script>
+<!-- ... (le reste du code reste inchangé) ... -->
+
+<script>
+    // ... (le reste du script reste inchangé) ...
+
+    // Bouton de confirmation dans la modal
+    confirmBtn.addEventListener('click', function() {
+        modal.classList.remove('active');
+        
+        if (currentBookId && currentBookTitle && currentButton) {
+            // Mettre à jour le sessionStorage
+            const cart = JSON.parse(sessionStorage.getItem('cart'));
+            cart[currentBookId] = {
+                id: currentBookId,
+                title: currentBookTitle,
+                added_at: new Date().toISOString()
+            };
+            sessionStorage.setItem('cart', JSON.stringify(cart));
+            
+            // Mettre à jour le bouton
+            currentButton.innerHTML = '<i class="fas fa-check me-1"></i> Ajouté au panier';
+            currentButton.classList.add('btn-cart-disabled');
+            currentButton.disabled = true;
+            
+            // Mettre à jour le compteur du panier dans la navbar
+            updateCartCounter();
+            
+            // Envoyer une requête au serveur pour ajouter au panier
+            const url = "{% url 'ajouter_au_panier' 0 %}".replace('0', currentBookId);
+            const csrfToken = getCookie('csrftoken'); // Fonction pour récupérer le cookie CSRF
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({}) // Pas de données supplémentaires nécessaires
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    setTimeout(() => {
+                        alert(`"${currentBookTitle}" a été ajouté à votre panier avec succès !`);
+                    }, 300);
+                } else {
+                    alert(`Erreur: ${data.message}`);
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Une erreur est survenue lors de l\'ajout au panier.');
+            });
+        }
+    });
+
+    // Fonction pour récupérer le cookie CSRF
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
 </body>
 </html>

@@ -7,7 +7,6 @@ from django.utils.translation import gettext_lazy as _
 class Categorie(models.Model):
     nom = models.CharField(max_length=100)
     icone = models.CharField(max_length=100, blank=True, null=True)
-    nombre_livres = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.nom

@@ -1,12 +1,129 @@
-
-
 {% extends "admincustom/base.html" %}
-
 {% block content %}
-  <h2>Ajouter un Livre</h2>
-  <form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Ajouter</button>
-  </form>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary">
+            <i class="fas fa-book me-2"></i>Ajouter un Livre
+        </h2>
+        <button type="button" class="btn btn-outline-secondary" onclick="window.history.back();">
+            <i class="fas fa-arrow-left me-1"></i> Retour
+        </button>
+    </div>
+    
+    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+        {% csrf_token %}
+        
+        {% if form.errors %}
+        <div class="alert alert-danger alert-dismissible fade show mb-4">
+            <strong><i class="fas fa-exclamation-circle me-2"></i>Erreur(s) :</strong> Veuillez corriger les problèmes ci-dessous
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endif %}
+        
+        <div class="card border-0 shadow-lg mb-4">
+            <div class="card-header bg-primary text-white py-3">
+                <h5 class="card-title mb-0"><i class="fas fa-info-circle me-2"></i>Informations du livre</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    {% for field in form %}
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">  <!-- Effet de floating label -->
+                            {% if field.field.widget.input_type == 'checkbox' %}
+                            <div class="form-check form-switch">
+                                {{ field }}
+                                <label class="form-check-label" for="{{ field.id_for_label }}">
+                                    <strong>{{ field.label }}</strong>
+                                </label>
+                            </div>
+                            {% else %}
+                            {{ field }}
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {% endif %}
+                            
+                            {% if field.help_text %}
+                            <div class="form-text text-muted mt-1">
+                                <i class="fas fa-info-circle me-1"></i>{{ field.help_text }}
+                            </div>
+                            {% endif %}
+                            
+                            {% for error in field.errors %}
+                            <div class="invalid-feedback d-flex align-items-center mt-1">
+                                <i class="fas fa-exclamation-triangle me-2"></i>{{ error }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="d-grid gap-3 d-md-flex justify-content-md-end mt-4">
+            <button type="reset" class="btn btn-lg btn-outline-secondary">
+                <i class="fas fa-undo me-2"></i>Réinitialiser
+            </button>
+            <button type="submit" class="btn btn-lg btn-primary">
+                <i class="fas fa-plus me-2"></i>Ajouter le livre
+            </button>
+        </div>
+    </form>
+</div>
+
+<style>
+    .card {
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    
+    .form-floating > label {
+        padding: 1rem 1.25rem;
+        color: #6c757d;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control, .form-select, .form-check-input {
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        border: 1px solid #dee2e6;
+        transition: all 0.3s ease;
+        box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25), inset 0 1px 2px rgba(0,0,0,0.05);
+    }
+    
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    
+    .btn {
+        border-radius: 10px;
+        font-weight: 500;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+        border: none;
+    }
+    
+    .btn-lg {
+        padding: 0.9rem 2rem;
+        font-size: 1.1rem;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    textarea.form-control {
+        min-height: 120px;
+    }
+</style>
 {% endblock %}

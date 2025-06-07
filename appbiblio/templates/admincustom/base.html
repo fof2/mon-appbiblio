@@ -14,24 +14,33 @@
 <body>
 
 <!-- Barre de navigation -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="/">📚 MonBiblio</a>
-    <div class="collapse navbar-collapse">
-      <ul class="navbar-nav ms-auto">
-        {% if user.is_authenticated %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'logout' %}">Déconnexion</a>
-          </li>
-        {% else %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'login' %}">Connexion</a>
-          </li>
-        {% endif %}
-      </ul>
-    </div>
-  </div>
-</nav>
+    <!-- Barre de navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--secondary);">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %} ">
+                <i class="fas fa-book me-2"></i>Bibliothèque
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'gestion_admin' %}">Admin</a>
+                    </li>
+                                        {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a href="{% url 'logout' %}" class="nav-link text-warning">Déconnexion</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Connexion</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
 
 <!-- Contenu principal -->
 <main class="container my-4">
