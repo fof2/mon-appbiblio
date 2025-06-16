@@ -800,3 +800,31 @@
     background-color: white;
     transform: scale(1.2);
 }
+
+        #dev-banner {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+            max-width: 300px;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        #close-banner {
+            float: right;
+            margin-left: 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+  
