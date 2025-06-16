@@ -1,0 +1,33 @@
+Fonctionnement du Système
+Réservation:
+
+Quand un utilisateur réserve un livre, une entrée est créée dans HistoriqueLivre avec statut "réservé"
+
+Le livre reste dans cette section jusqu'à ce que l'admin valide l'emprunt
+
+Emprunt:
+
+Quand l'admin valide, le statut passe à "emprunté" avec les dates de début/fin
+
+Le livre apparaît alors dans la section "Empruntés"
+
+Retour:
+
+Quand le livre est retourné, le statut passe à "retourné"
+
+Le livre quitte "Empruntés" et apparaît dans "Retournés"
+
+Panier Permanent:
+
+Les livres restent dans l'historique indéfiniment
+
+Seuls les livres actuellement réservés apparaissent dans le panier actif
+
+Avantages de cette Solution
+Historique complet: Toutes les actions sont enregistrées et consultables à tout moment
+
+Séparation claire: Chaque statut a sa propre section dans l'interface
+
+Flexibilité: Vous pouvez facilement ajouter d'autres statuts si besoin
+
+Permanence: Les données ne sont jamais supprimées, seulement archivées

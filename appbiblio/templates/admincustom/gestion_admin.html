@@ -211,6 +211,15 @@
     </style>
 </head>
 <body>
+    
+    <div class="container mb-5">
+    <div class="navigation-header">
+        <a href="{% url 'home' %}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Retour à l'accueil
+        </a>
+    </div>
+    </div>
+
     <div class="container py-4">
         <div class="admin-header">
             <h1><i class="fas fa-tachometer-alt me-2"></i>Tableau de bord Administrateur</h1>
@@ -226,7 +235,7 @@
                     </div>
                     <h3 class="card-title">Gérer les Livres</h3>
                     <p class="card-text">Ajoutez, modifiez ou supprimez des livres de la bibliothèque.</p>
-                    <a href="{% url 'admin_livres' %}" class="btn dashboard-btn text-white">Accéder aux livres</a>
+                    <a href="{% url 'livres_admin' %}" class="btn dashboard-btn text-white">Accéder aux livres</a>
                 </div>
             </div>
             

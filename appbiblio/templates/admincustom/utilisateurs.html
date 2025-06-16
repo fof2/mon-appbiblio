@@ -1,6 +1,13 @@
 {% extends "admincustom/base.html" %}
 {% load static %}
 {% block content %}
+    <div class="container mb-5">
+    <div class="navigation-header">
+        <a href="{% url 'gestion_admin' %}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Retour à l'accueil Administrateur
+        </a>
+    </div>
+    </div>
 <div class="container mt-5">
   <h2 class="mb-4">Liste des Utilisateurs</h2>
   <table class="table table-bordered table-striped">

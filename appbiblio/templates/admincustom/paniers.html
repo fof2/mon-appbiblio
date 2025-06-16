@@ -1,147 +1,168 @@
 {% extends "admincustom/base.html" %}
 {% load static %}
 {% block content %}
+
 <div class="container mt-5">
-    <h2 class="mb-4">Gestion des Paniers</h2>
-    
-    <!-- Statistiques en tête -->
+    <h2 class="mb-4">Gestion des Réservations et Emprunts</h2>
+    <div class="container mb-5">
+    <div class="navigation-header">
+        <a href="{% url 'gestion_admin' %}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Retour à l'accueil Administrateur
+        </a>
+    </div>
+    </div>
+
     <div class="row mb-4">
         <div class="col-md-3">
             <div class="card bg-primary text-white text-center p-3">
-                <h5 class="mb-0">Paniers Actifs</h5>
-                <h3 class="mb-0">{{ paniers.count }}</h3>
+                <h5 class="mb-0">Paniers Actifs (Réservations)</h5>
+                <h3 class="mb-0">{{ paniers_actifs }}</h3>
             </div>
         </div>
         <div class="col-md-3">
             <div class="card bg-success text-white text-center p-3">
-                <h5 class="mb-0">Emprunts Validés</h5>
-                <h3 class="mb-0">{{ emprunts_valides.count }}</h3>
+                <h5 class="mb-0">Emprunts en Cours</h5>
+                <h3 class="mb-0">{{ emprunts_valides }}</h3>
             </div>
         </div>
         <div class="col-md-3">
             <div class="card bg-warning text-dark text-center p-3">
-                <h5 class="mb-0">En Attente</h5>
-                <h3 class="mb-0">{{ emprunts_attente.count }}</h3>
+                <h5 class="mb-0">Réservations en Attente</h5>
+                <h3 class="mb-0">{{ emprunts_attente }}</h3>
             </div>
         </div>
         <div class="col-md-3">
             <div class="card bg-info text-white text-center p-3">
-                <h5 class="mb-0">Livres Demandés</h5>
-                <h3 class="mb-0">{{ total_livres }}</h3>
+                <h5 class="mb-0">Livres Retournés</h5>
+                <h3 class="mb-0">{{ total_livres_retournes }}</h3>
             </div>
         </div>
     </div>
-    
-    <!-- Barre de recherche et filtres -->
+
     <div class="card mb-4">
         <div class="card-body">
             <div class="row">
                 <div class="col-md-8">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Rechercher un utilisateur ou un livre...">
-                        <button class="btn btn-primary">Rechercher</button>
+                        <input type="text" class="form-control" id="search_input" placeholder="Rechercher un utilisateur ou un livre...">
+                        <button class="btn btn-primary" id="search_button">Rechercher</button>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <select class="form-select">
-                        <option>Tous les statuts</option>
-                        <option>En attente</option>
-                        <option>Validé</option>
-                        <option>Refusé</option>
+                    <select class="form-select" id="status_filter">
+                        <option value="">Tous les statuts</option>
+                        <option value="réservé">Réservé (en attente)</option>
+                        <option value="emprunté">Emprunté (en cours)</option>
+                        <option value="retourné">Retourné</option>
+                        <option value="refusé">Refusé</option>
                     </select>
                 </div>
             </div>
         </div>
     </div>
-    
-    <!-- Tableau des paniers -->
+
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover" id="paniers_table">
                     <thead class="table-dark">
                         <tr>
                             <th>Utilisateur</th>
-                            <th>Livres Demandés</th>
-                            <th>Date Demande</th>
-                            <th>Statut</th>
-                            <th>Date Emprunt</th>
+                            <th>Livres (Titre / Auteur)</th>
+                            <th>Statut</th> {# Renommé pour être plus simple #}
+                            <th>Date (Demande/Emprunt/Retour)</th> {# Titre plus général #}
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for panier in paniers %}
-                        <tr>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
-                                        {{ panier.utilisateur.username|first|upper }}
+                        {% for panier_data in paniers %}
+                            {% for livre_detail in panier_data.livres_details %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                            {{ panier_data.utilisateur.username|first|upper }}
+                                        </div>
+                                        <div>
+                                            <strong>{{ panier_data.utilisateur.username }}</strong>
+                                            <div class="text-muted small">{{ panier_data.utilisateur.email }}</div>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <strong>{{ panier.utilisateur.username }}</strong>
-                                        <div class="text-muted small">{{ panier.utilisateur.email }}</div>
+                                </td>
+                                <td>
+                                    <strong>{{ livre_detail.titre }}</strong>
+                                    <span class="badge bg-light text-dark">{{ livre_detail.auteur }}</span>
+                                </td>
+                                <td>
+                                    {# Statut du livre (réservé, emprunté, retourné, refusé) #}
+                                    {% if livre_detail.status == 'emprunté' %}
+                                        <span class="badge bg-success">Emprunté</span>
+                                    {% elif livre_detail.status == 'réservé' %}
+                                        <span class="badge bg-warning text-dark">Réservé</span>
+                                    {% elif livre_detail.status == 'retourné' %}
+                                        <span class="badge bg-info">Retourné</span>
+                                    {% elif livre_detail.status == 'refusé' %}
+                                        <span class="badge bg-danger">Refusé</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Inconnu</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if livre_detail.emprunt_date %} {# Date de l'emprunt #}
+                                        {{ livre_detail.emprunt_date|date:"d/m/Y" }}
+                                    {% elif livre_detail.reservation_date %} {# Date de la réservation #}
+                                        {{ livre_detail.reservation_date|date:"d/m/Y" }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        {% if livre_detail.status == 'réservé' %}
+                                            <button class="btn btn-sm btn-success validate-btn"
+                                                    data-livre-id="{{ livre_detail.id }}"
+                                                    data-user-id="{{ panier_data.utilisateur.id }}"
+                                                    data-bs-toggle="tooltip" title="Valider la réservation">
+                                                <i class="fas fa-check"></i> Valider
+                                            </button>
+                                            <button class="btn btn-sm btn-danger refuse-btn"
+                                                    data-livre-id="{{ livre_detail.id }}"
+                                                    data-user-id="{{ panier_data.utilisateur.id }}"
+                                                    data-bs-toggle="tooltip" title="Refuser la réservation">
+                                                <i class="fas fa-times"></i> Refuser
+                                            </button>
+                                        {% elif livre_detail.status == 'emprunté' %}
+                                            {# Le bouton de retour a besoin de l'ID de l'Emprunt réel, pas du Livre ou de l'utilisateur #}
+                                            {# Assurez-vous que votre vue passe 'emprunt_id' si 'livre_detail.status' est 'emprunté' #}
+                                            {% if livre_detail.emprunt_id %}
+                                            <button class="btn btn-sm btn-info return-btn"
+                                                    data-emprunt-id="{{ livre_detail.emprunt_id }}"
+                                                    data-bs-toggle="tooltip" title="Marquer comme retourné">
+                                                <i class="fas fa-undo"></i> Retourné
+                                            </button>
+                                            {% else %}
+                                            <span class="text-muted small">Emprunt actif</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="text-muted small">Aucune action</span>
+                                        {% endif %}
                                     </div>
-                                </div>
-                            </td>
-                            <td>
-                                {% if panier.livres.all %}
-                                    <ul class="mb-0">
-                                        {% for livre in panier.livres.all %}
-                                        <li>
-                                            {{ livre.titre }}
-                                            <span class="badge bg-light text-dark">{{ livre.auteur }}</span>
-                                        </li>
-                                        {% endfor %}
-                                    </ul>
-                                {% else %}
-                                    <span class="text-muted">Aucun livre</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ panier.date_creation|date:"d/m/Y" }}</td>
-                            <td>
-                                {% if panier.statut == 'valide' %}
-                                    <span class="badge bg-success">Validé</span>
-                                {% elif panier.statut == 'attente' %}
-                                    <span class="badge bg-warning">En attente</span>
-                                {% else %}
-                                    <span class="badge bg-danger">Refusé</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if panier.date_emprunt %}
-                                    <input type="date" class="form-control form-control-sm" value="{{ panier.date_emprunt|date:'Y-m-d' }}">
-                                {% else %}
-                                    <input type="date" class="form-control form-control-sm" value="{% now 'Y-m-d' %}">
-                                {% endif %}
-                            </td>
-                            <td>
-                                <div class="btn-group">
-                                    <button class="btn btn-sm btn-success" data-bs-toggle="tooltip" title="Valider l'emprunt">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger" data-bs-toggle="tooltip" title="Refuser l'emprunt">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-primary" data-bs-toggle="tooltip" title="Modifier">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                                </td>
+                            </tr>
+                            {% endfor %}
                         {% empty %}
                         <tr>
-                            <td colspan="6" class="text-center py-4">
+                            <td colspan="5" class="text-center py-4">
                                 <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
-                                <h5>Aucun panier trouvé</h5>
-                                <p class="text-muted">Aucun utilisateur n'a actuellement de panier actif</p>
+                                <h5>Aucune demande de livre ou emprunt actif trouvé</h5>
+                                <p class="text-muted">Aucun utilisateur n'a actuellement de panier actif ou d'emprunt en cours de traitement.</p>
                             </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-            
-            <!-- Pagination -->
+
             <nav class="mt-4">
                 <ul class="pagination justify-content-center">
                     <li class="page-item disabled">
@@ -157,29 +178,75 @@
             </nav>
         </div>
     </div>
-    
-    <!-- Modal de validation -->
+
+    {# Modals inchangées #}
     <div class="modal fade" id="validationModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title">Valider l'emprunt</h5>
+                    <h5 class="modal-title">Valider la réservation</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Êtes-vous sûr de vouloir valider cet emprunt ?</p>
+                    <p>Êtes-vous sûr de vouloir valider la réservation du livre "<span id="modal_validate_book_title"></span>" pour l'utilisateur "<span id="modal_validate_username"></span>" ?</p>
+                    <input type="hidden" id="modal_validate_livre_id">
+                    <input type="hidden" id="modal_validate_user_id">
                     <div class="mb-3">
-                        <label class="form-label">Date de retour prévue</label>
-                        <input type="date" class="form-control" value="{% now 'Y-m-d' %}">
+                        <label class="form-label">Date de l'emprunt (aujourd'hui par défaut)</label>
+                        <input type="date" class="form-control" id="modal_validate_date_emprunt" value="{% now 'Y-m-d' %}">
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-success">Confirmer</button>
+                    <button type="button" class="btn btn-success" id="confirmValidate">Confirmer la validation</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="refuseModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Refuser la réservation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Êtes-vous sûr de vouloir refuser la réservation du livre "<span id="modal_refuse_book_title"></span>" pour l'utilisateur "<span id="modal_refuse_username"></span>" ? Cette action ne peut pas être annulée.</p>
+                    <input type="hidden" id="modal_refuse_livre_id">
+                    <input type="hidden" id="modal_refuse_user_id">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-danger" id="confirmRefuse">Confirmer le refus</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="returnModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title">Marquer comme retourné</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Confirmez-vous le retour du livre ?</p>
+                    <input type="hidden" id="modal_return_emprunt_id">
+                    <div class="mb-3">
+                        <label class="form-label">Date de retour</label>
+                        <input type="date" class="form-control" id="modal_return_date" value="{% now 'Y-m-d' %}">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-info" id="confirmReturn">Confirmer le retour</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <style>
@@ -211,28 +278,194 @@
 </style>
 
 <script>
-    // Initialisation des tooltips Bootstrap
     document.addEventListener('DOMContentLoaded', function() {
+        // Initialisation des tooltips Bootstrap
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl)
-        })
-        
-        // Gestion des boutons de validation
-        document.querySelectorAll('.btn-success').forEach(button => {
+        });
+
+        // Fonction pour obtenir le jeton CSRF de Django
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+
+        // --- Gestion des MODALS et des ACTIONS ---
+
+        // Valider Emprunt (Réservation -> Emprunté)
+        document.querySelectorAll('.validate-btn').forEach(button => {
             button.addEventListener('click', function() {
-                const modal = new bootstrap.Modal(document.getElementById('validationModal'))
-                modal.show();
+                const livreId = this.dataset.livreId;
+                const userId = this.dataset.userId;
+                const livreTitre = this.closest('tr').querySelector('td:nth-child(2) strong').textContent;
+                const username = this.closest('tr').querySelector('.d-flex strong').textContent;
+
+                document.getElementById('modal_validate_livre_id').value = livreId;
+                document.getElementById('modal_validate_user_id').value = userId;
+                document.getElementById('modal_validate_book_title').textContent = livreTitre;
+                document.getElementById('modal_validate_username').textContent = username;
+
+                const validationModal = new bootstrap.Modal(document.getElementById('validationModal'));
+                validationModal.show();
             });
         });
-        
-        // Gestion des dates d'emprunt
+
+        document.getElementById('confirmValidate').addEventListener('click', function() {
+            const livreId = document.getElementById('modal_validate_livre_id').value;
+            const userId = document.getElementById('modal_validate_user_id').value;
+            // La date d'emprunt est déjà définie par défaut dans la modale via {% now 'Y-m-d' %}
+            const dateEmprunt = document.getElementById('modal_validate_date_emprunt').value;
+
+            fetch(`/admin-biblio/emprunt/valider/${livreId}/${userId}/`, { // Adaptez l'URL
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({ 'date_emprunt': dateEmprunt }) // On passe la date d'emprunt
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    location.reload(); // Recharger la page pour mettre à jour le tableau
+                } else {
+                    alert('Erreur: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Une erreur est survenue lors de la validation.');
+            });
+            const validationModal = bootstrap.Modal.getInstance(document.getElementById('validationModal'));
+            validationModal.hide();
+        });
+
+
+        // Refuser Emprunt (Réservation -> Refusé)
+        document.querySelectorAll('.refuse-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const livreId = this.dataset.livreId;
+                const userId = this.dataset.userId;
+                const livreTitre = this.closest('tr').querySelector('td:nth-child(2) strong').textContent;
+                const username = this.closest('tr').querySelector('.d-flex strong').textContent;
+
+                document.getElementById('modal_refuse_livre_id').value = livreId;
+                document.getElementById('modal_refuse_user_id').value = userId;
+                document.getElementById('modal_refuse_book_title').textContent = livreTitre;
+                document.getElementById('modal_refuse_username').textContent = username;
+
+                const refuseModal = new bootstrap.Modal(document.getElementById('refuseModal'));
+                refuseModal.show();
+            });
+        });
+
+        document.getElementById('confirmRefuse').addEventListener('click', function() {
+            const livreId = document.getElementById('modal_refuse_livre_id').value;
+            const userId = document.getElementById('modal_refuse_user_id').value;
+
+            fetch(`/admin-biblio/emprunt/refuser/${livreId}/${userId}/`, { // Adaptez l'URL
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert('Erreur: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Une erreur est survenue lors du refus.');
+            });
+            const refuseModal = bootstrap.Modal.getInstance(document.getElementById('refuseModal'));
+            refuseModal.hide();
+        });
+
+
+        // Marquer comme Retourné (pour les Emprunts ACTIFS)
+        document.querySelectorAll('.return-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const empruntId = this.dataset.empruntId; // Nous avons besoin de l'ID de l'Emprunt réel
+                document.getElementById('modal_return_emprunt_id').value = empruntId;
+
+                const returnModal = new bootstrap.Modal(document.getElementById('returnModal'));
+                returnModal.show();
+            });
+        });
+
+        document.getElementById('confirmReturn').addEventListener('click', function() {
+            const empruntId = document.getElementById('modal_return_emprunt_id').value;
+            const returnDate = document.getElementById('modal_return_date').value; // La date de retour du modal
+
+            fetch(`/admin-biblio/emprunt/retourner/${empruntId}/`, { // Adaptez l'URL
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({ 'date_retour': returnDate }) // On passe la date de retour
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert('Erreur: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Une erreur est survenue lors du marquage comme retourné.');
+            });
+            const returnModal = bootstrap.Modal.getInstance(document.getElementById('returnModal'));
+            returnModal.hide();
+        });
+
+        // Gestion de la date par défaut pour les inputs type="date"
         document.querySelectorAll('input[type="date"]').forEach(input => {
-            if (!input.value) {
+            if (!input.value) { 
                 const today = new Date().toISOString().split('T')[0];
                 input.value = today;
             }
         });
+        // Fonctions de recherche et de filtrage (à connecter à votre backend)
+        document.getElementById('search_button').addEventListener('click', function() {
+            const searchTerm = document.getElementById('search_input').value;
+            const statusFilter = document.getElementById('status_filter').value;
+            // TODO: Implémenter la logique de recherche/filtrage via AJAX ou redirection
+            console.log('Recherche:', searchTerm, 'Filtre:', statusFilter);
+            // Exemple de redirection (à adapter avec vos URL de recherche)
+            window.location.href = `/admin-biblio/paniers/?search=${searchTerm}&status=${statusFilter}`;
+        });
+
+        document.getElementById('status_filter').addEventListener('change', function() {
+            const searchTerm = document.getElementById('search_input').value;
+            const statusFilter = this.value;
+            // TODO: Implémenter la logique de recherche/filtrage via AJAX ou redirection
+            console.log('Recherche:', searchTerm, 'Filtre:', statusFilter);
+            window.location.href = `/admin-biblio/paniers/?search=${searchTerm}&status=${statusFilter}`;
+        });
     });
 </script>
-{% endblock %}
+{% endblock content %}

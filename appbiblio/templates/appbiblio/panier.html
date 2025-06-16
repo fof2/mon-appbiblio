@@ -5,35 +5,45 @@
     <div class="card border-0 shadow-lg">
         <div class="card-header bg-primary text-white">
             <div class="d-flex justify-content-between align-items-center">
-                <h2 class="mb-0">Mon Panier d'Emprunt</h2>
+                <h2 class="mb-0">Mon Panier Permanent</h2>
                 <span class="badge bg-light text-primary fs-6">
                     <i class="fas fa-book me-1"></i>
-                    <span id="cart-count">{{ panier.livres.count }}</span> livre(s)
+                    <span id="cart-count">{{ lignes_panier|length }}</span> livre(s)
                 </span>
             </div>
         </div>
-        
+
         <div class="card-body">
-            {% if panier.livres.all %}
+            {% if messages %}
+                <div class="mb-4">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% if lignes_panier %}
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
                         <tr>
                             <th scope="col" style="width: 40%">Livre</th>
-                            <th scope="col">Dates d'emprunt</th>
+                            <th scope="col">Détails</th>
                             <th scope="col" class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for livre in panier.livres.all %}
-                        {% with emprunt_prevu=livre.empruntprevu_set.first %}
-                        <tr class="position-relative">
+                        {% for ligne in lignes_panier %}
+                        <tr id="ligne-{{ ligne.id }}" class="position-relative">
                             <td>
                                 <div class="d-flex align-items-center">
                                     <div class="me-3">
                                         <div class="book-cover-mini bg-light border rounded">
-                                            {% if livre.couverture_img %}
-                                            <img src="{{ livre.couverture_img }}" alt="Couverture de {{ livre.titre }}" class="img-fluid">
+                                            {% if ligne.livre.couverture_img %}
+                                            <img src="{{ ligne.livre.couverture_img.url }}" alt="Couverture de {{ ligne.livre.titre }}" class="img-fluid">
                                             {% else %}
                                             <div class="d-flex align-items-center justify-content-center h-100 text-muted">
                                                 <i class="fas fa-book fa-2x"></i>
@@ -42,72 +52,56 @@
                                         </div>
                                     </div>
                                     <div>
-                                        <strong class="d-block">{{ livre.titre }}</strong>
-                                        <small class="text-muted">Par {{ livre.auteur }}</small>
+                                        <strong class="d-block">{{ ligne.livre.titre }}</strong>
+                                        <small class="text-muted">Par {{ ligne.livre.auteur }}</small>
+                                        <div class="mt-1">
+                                            <span class="badge bg-secondary">{{ ligne.categorie }}</span>
+                                            <span class="badge bg-info text-dark ms-1">ISBN: {{ ligne.isbn }}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </td>
                             <td>
-                                {% if emprunt_prevu %}
                                 <div class="d-flex flex-column">
                                     <div class="d-flex align-items-center mb-1">
-                                        <i class="fas fa-calendar-check me-2 text-primary"></i>
-                                        <span>Retrait prévu: {{ emprunt_prevu.date_prevue_retrait|date:"d/m/Y" }}</span>
+                                        <i class="fas fa-calendar-alt me-2 text-primary"></i>
+                                        <span>Réservé le: {{ ligne.date_reservation|date:"d/m/Y" }}</span>
                                     </div>
                                     <div class="d-flex align-items-center mb-1">
-                                        <i class="fas fa-hourglass-half me-2 text-warning"></i>
-                                        <span>Limite: {{ emprunt_prevu.date_limite_retrait|date:"d/m/Y" }}</span>
+                                        <i class="fas fa-tag me-2 text-info"></i>
+                                        <span>Prix: {{ ligne.prix }} €</span>
                                     </div>
                                     <div class="d-flex align-items-center">
-                                        <i class="fas fa-calendar-times me-2 text-info"></i>
-                                        <span>Retour prévu: {{ emprunt_prevu.date_prevue_retour|date:"d/m/Y" }}</span>
+                                        <i class="fas fa-info-circle me-2 text-{{ ligne.statut_actuel|yesno:'success,danger' }}"></i>
+                                        <span class="text-{{ ligne.statut_actuel|yesno:'success,danger' }}">
+                                            Statut: 
+                                            {% if ligne.statut_actuel == 'réservé' %}
+                                                <span class="text-success">Disponible au retrait</span>
+                                            {% else %}
+                                                <span class="text-danger">{{ ligne.statut_actuel|capfirst }}</span>
+                                            {% endif %}
+                                        </span>
                                     </div>
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-dollar-sign me-1"></i>
-                                    <span>Prix fix : {{ livre.prix }}</span>
                                 </div>
-                                </div>
-                                {% else %}
-                                <div class="d-flex flex-column">
-                                    <div class="d-flex align-items-center mb-1">
-                                        <i class="fas fa-calendar-check me-2 text-primary"></i>
-                                        <span class="date-retrait">chargement...</span>
-                                    </div>
-                                    <div class="d-flex align-items-center mb-1">
-                                        <i class="fas fa-hourglass-half me-2 text-warning"></i>
-                                        <span class="date-limite-retrait">chargement...</span>
-                                    </div>
-                                    <div class="d-flex align-items-center">
-                                        <i class="fas fa-calendar-times me-2 text-info"></i>
-                                        <span class="date-retour">chargement...</span>
-                                    </div>
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-dollar-sign me-1"></i>
-                                    <span>Prix fix : {{ livre.prix }}</span>
-                                </div>
-                                </div>
-                                {% endif %}
                             </td>
                             <td class="text-center">
-                                <form id="form-suprimer"  method="POST" action="{% url 'supprimer_panier' livre.id %}" class="d-inline">
+                                <form class="form-supprimer-ligne d-inline" data-ligne-id="{{ ligne.id }}">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-sm btn-outline-danger">
-                                        <i class="fas fa-trash-alt me-1"></i> Supprimer
+                                        <i class="fas fa-trash-alt me-1"></i> Retirer
                                     </button>
                                 </form>
                             </td>
                         </tr>
-                        {% endwith %}
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
             
-            <div class="d-flex justify-content-between align-items-center mt-4">
+            <div class="d-flex justify-content-end mt-4">
                 <a href="{% url 'home' %}" class="btn btn-outline-primary">
-                    <i class="fas fa-arrow-left me-2"></i>Continuer mes emprunts
+                    <i class="fas fa-arrow-left me-2"></i>Retour à la bibliothèque
                 </a>
-                
             </div>
             {% else %}
             <div class="text-center py-5">
@@ -115,9 +109,9 @@
                     <i class="fas fa-shopping-cart fa-4x text-muted"></i>
                 </div>
                 <h3 class="text-muted mb-3">Votre panier est vide</h3>
-                <p class="text-muted mb-4">Commencez par ajouter des livres à votre panier</p>
+                <p class="text-muted mb-4">Commencez par ajouter des livres à votre collection permanente</p>
                 <a href="{% url 'home' %}" class="btn btn-primary btn-lg">
-                    <i class="fas fa-book me-2"></i>Parcourir la bibliothèque
+                    <i class="fas fa-book me-2"></i>Découvrir des livres
                 </a>
             </div>
             {% endif %}
@@ -125,17 +119,7 @@
     </div>
 </div>
 
-<!-- Message de validation -->
-<div id="message-validation" class="toast-container position-fixed bottom-0 end-0 p-3">
-    <div id="validation-toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-            <div class="toast-body">
-                <i class="fas fa-check-circle me-2"></i> Votre emprunt a été suprimer avec succès !
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-    </div>
-</div>
+<!-- Le reste du code (JS et CSS) reste inchangé -->
 
 <style>
     .card {
@@ -156,6 +140,12 @@
         justify-content: center;
     }
     
+    .book-cover-mini img {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+    }
+
     .table th {
         font-weight: 600;
         text-transform: uppercase;
@@ -203,38 +193,96 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    // Charger les dates prévisionnelles
-    fetch('/dates-prevision/')
-        .then(response => response.json())
-        .then(data => {
-            document.querySelectorAll('.date-retrait').forEach(el => el.textContent = "Retrait prévu: " + data.date_retrait);
-            document.querySelectorAll('.date-limite-retrait').forEach(el => el.textContent = "Limite: " + data.date_limite_retrait);
-            document.querySelectorAll('.date-retour').forEach(el => el.textContent = "Retour prévu: " + data.date_retour);
-          });
+    // Gestion de la suppression des lignes du panier
+    document.querySelectorAll('.form-supprimer-ligne').forEach(form => {
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const ligneId = this.dataset.ligneId;
+            const rowToRemove = document.getElementById(`ligne-${ligneId}`);
+            const csrfToken = this.querySelector('[name="csrfmiddlewaretoken"]').value;
+            const url = "{% url 'supprimer_ligne_panier' 0 %}".replace('0', ligneId);
 
-    // Gestion affichage message avant soumission formulaire
-    document.getElementById('form-suprimer').addEventListener('submit', function(event) {
-        event.preventDefault();  // Empêche l'envoi immédiat
-        
-        // Afficher le toast de validation
-        const toastEl = document.getElementById('validation-toast');
-        const toast = new bootstrap.Toast(toastEl);
-        toast.show();
-        
-        // Soumettre après 2 secondes
-        setTimeout(() => {
-            event.target.submit();
-        }, 2000);
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrfToken
+                },
+                body: new URLSearchParams({
+                    'csrfmiddlewaretoken': csrfToken
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (rowToRemove) {
+                        rowToRemove.style.opacity = '0';
+                        rowToRemove.style.transition = 'opacity 0.5s ease';
+                        setTimeout(() => {
+                            rowToRemove.remove();
+                            const cartCountElement = document.getElementById('cart-count');
+                            if (cartCountElement) {
+                                let currentCount = parseInt(cartCountElement.textContent);
+                                cartCountElement.textContent = currentCount > 0 ? currentCount - 1 : 0;
+
+                                if (cartCountElement.textContent === '0') {
+                                    const tableResponsive = document.querySelector('.table-responsive');
+                                    const validationSection = document.querySelector('.d-flex.justify-content-between.align-items-center.mt-4');
+                                    if (tableResponsive) tableResponsive.remove();
+                                    if (validationSection) validationSection.remove();
+
+                                    const cardBody = document.querySelector('.card-body');
+                                    if (cardBody) {
+                                        cardBody.innerHTML = `
+                                            <div class="text-center py-5">
+                                                <div class="empty-cart-icon mb-4">
+                                                    <i class="fas fa-shopping-cart fa-4x text-muted"></i>
+                                                </div>
+                                                <h3 class="text-muted mb-3">Votre panier est vide</h3>
+                                                <p class="text-muted mb-4">Commencez par ajouter des livres à votre panier</p>
+                                                <a href="{% url 'home' %}" class="btn btn-primary btn-lg">
+                                                    <i class="fas fa-book me-2"></i>Parcourir la bibliothèque
+                                                </a>
+                                            </div>
+                                        `;
+                                    }
+                                }
+                            }
+                        }, 500);
+                    }
+                }
+                showToast(data.message, data.success ? 'bg-success' : 'bg-danger');
+            })
+            .catch(error => {
+                console.error('Erreur lors de la suppression de la ligne:', error);
+                showToast('Une erreur est survenue lors de la suppression.', 'bg-danger');
+            });
+        });
     });
-    
-    // Animation des lignes du tableau
-    document.querySelectorAll('tbody tr').forEach(row => {
-        row.style.opacity = '0';
-        setTimeout(() => {
-            row.style.transition = 'opacity 0.5s ease';
-            row.style.opacity = '1';
-        }, 100 * row.rowIndex);
-    });
+
+    // Fonction pour afficher les notifications
+    function showToast(message, bgColor) {
+        const messageContainer = document.getElementById('message-container');
+        const toastId = `toast-${Date.now()}`;
+        const toastHtml = `
+            <div id="${toastId}" class="toast align-items-center text-white ${bgColor} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="fas fa-info-circle me-2"></i> ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        `;
+        messageContainer.insertAdjacentHTML('beforeend', toastHtml);
+        const newToastEl = document.getElementById(toastId);
+        const newToast = new bootstrap.Toast(newToastEl, { delay: 5000 });
+        newToast.show();
+
+        newToastEl.addEventListener('hidden.bs.toast', () => {
+            newToastEl.remove();
+        });
+    }
 });
 </script>
 {% endblock %}

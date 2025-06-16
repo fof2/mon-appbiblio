@@ -125,8 +125,8 @@
     <!-- Barre de navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--secondary);">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'home' %} ">
-                <i class="fas fa-book me-2"></i>Bibliothèque
+            <a class="navbar-brand" href="{% url 'gestion_admin' %} ">
+                <i class="fas fa-book me-2"></i>Admin
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -149,6 +149,13 @@
             </div>
         </div>
     </nav>
+    <div class="container mb-5">
+    <div class="navigation-header">
+        <a href="{% url 'gestion_admin' %}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Retour à l'accueil Administrateur
+        </a>
+    </div>
+    </div>
 
     <!-- Bannière d'en-tête -->
     <div class="header-banner">

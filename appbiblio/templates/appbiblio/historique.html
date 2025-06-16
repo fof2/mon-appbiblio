@@ -1,0 +1,151 @@
+{% extends 'appbiblio/panier_base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Panier Actif -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5>Votre Panier Actuel</h5>
+                </div>
+                <div class="card-body">
+                    {% if panier_actif %}
+                        <ul class="list-group">
+                            {% for ligne in panier_actif %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ ligne.livre.titre }}
+                                <span class="badge bg-secondary">{{ ligne.date_ajout|date:"d/m/Y" }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% if panier_actif %}
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'valider_panier' %}" class="btn btn-success">Valider le panier</a>
+                            <a href="{% url 'vider_panier' %}" class="btn btn-outline-danger">Vider le panier</a>
+                        </div>
+                        {% endif %}
+                    {% else %}
+                        <p class="text-muted">Votre panier est vide</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Historique Complet -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5>Votre Historique Complet</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Réservations -->
+                    <div class="mb-4">
+                        <h6 class="border-bottom pb-2">Livres Réservés</h6>
+                        {% if livres_reserves %}
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Livre</th>
+                                            <th>Date Réservation</th>
+                                            <th>Date Fin</th>
+                                            <th>Statut</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in livres_reserves %}
+                                        <tr>
+                                            <td>{{ item.livre.titre }}</td>
+                                            <td>{{ item.date_action|date:"d/m/Y H:i" }}</td>
+                                            <td>{{ item.date_fin|date:"d/m/Y" }}</td>
+                                            <td>
+                                                <span class="badge bg-{% if item.date_fin < now %}danger{% else %}warning{% endif %}">
+                                                    {{ item.get_statut_display }}
+                                                    {% if item.date_fin < now %} (En retard){% endif %}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-muted">Aucune réservation en cours</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Emprunts Actifs -->
+                    <div class="mb-4">
+                        <h6 class="border-bottom pb-2">Livres Actuellement Empruntés</h6>
+                        {% if livres_empruntes %}
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Livre</th>
+                                            <th>Date Emprunt</th>
+                                            <th>Retour avant le</th>
+                                            <th>Statut</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for emprunt in livres_empruntes %}
+                                        <tr class="{% if emprunt.en_retard %}table-danger{% endif %}">
+                                            <td>{{ emprunt.livre.titre }}</td>
+                                            <td>{{ emprunt.date_retrait|date:"d/m/Y" }}</td>
+                                            <td>{{ emprunt.date_limite_retrait|date:"d/m/Y" }}</td>
+                                            <td>
+                                                {% if emprunt.en_retard %}
+                                                    <span class="badge bg-danger">En retard</span>
+                                                {% else %}
+                                                    <span class="badge bg-success">En cours</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-muted">Aucun emprunt en cours</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Emprunts Terminés -->
+                    <div>
+                        <h6 class="border-bottom pb-2">Historique des Retours</h6>
+                        {% if livres_retournes %}
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Livre</th>
+                                            <th>Date Emprunt</th>
+                                            <th>Date Retour</th>
+                                            <th>Durée</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for emprunt in livres_retournes %}
+                                        <tr>
+                                            <td>{{ emprunt.livre.titre }}</td>
+                                            <td>{{ emprunt.date_retrait|date:"d/m/Y" }}</td>
+                                            <td>{{ emprunt.date_retour|date:"d/m/Y" }}</td>
+                                            <td>{{ emprunt.date_retrait|timesince:emprunt.date_retour }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-muted">Aucun livre retourné</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -442,7 +442,7 @@
     </style>
 </head>
 <body>
-{% include 'appbiblio/navbar.html' %}
+{% include 'appbiblio/navbar.html' %}<br>
 
 <!-- Modal de confirmation -->
 <div class="confirmation-modal" id="confirmationModal">
@@ -517,10 +517,15 @@
                             </div>
                         </div>
                         <div class="action-buttons">
-                            <button class="btn btn-reserve" data-book-id="{{ livre.id }}">
-                                <i class="fas fa-bookmark me-1"></i> 
-                                {% if livre.statut == 'disponible' %}Réserver{% else %}Emprunter{% endif %}
-                            </button>
+                                <!-- BOUTON pour afficher le résumé -->
+                                <button class="toggle-resume-btn" data-id="{{ livre.id }}">
+                                    <i class="fas fa-book-open me-2"></i>Voir le résumé
+                                </button>
+
+                                <!-- Résumé caché -->
+                                <div id="resume-{{ livre.id }}" class="resume-content" style="display: none;">
+                                    {{ livre.description|linebreaks }}
+                                </div>
                             <button class="btn btn-cart add-to-cart-btn" 
                                     data-book-id="{{ livre.id }}" 
                                     data-book-title="{{ livre.titre }}">
@@ -706,6 +711,28 @@
         }
     }
     
+    // Fonction pour basculer l'affichage du résumé
+    function toggleResume(bookId) {
+        const resumeElement = document.getElementById(`resume-${bookId}`);
+        const buttonElement = document.querySelector(`.toggle-resume-btn[data-id="${bookId}"]`);
+        
+        if (resumeElement.style.display === 'none') {
+            resumeElement.style.display = 'block';
+            buttonElement.innerHTML = '<i class="fas fa-book-open me-2"></i>Masquer le résumé';
+        } else {
+            resumeElement.style.display = 'none';
+            buttonElement.innerHTML = '<i class="fas fa-book-open me-2"></i>Voir le résumé';
+        }
+    }
+
+      // Écouteurs d'événements pour les résumés
+    document.querySelectorAll('.toggle-resume-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const bookId = this.getAttribute('data-id');
+            toggleResume(bookId);
+        });
+    });
+    
     // Animation pour le bouton "Réserver"
     const reserveButtons = document.querySelectorAll('.btn-reserve');
     reserveButtons.forEach(button => {
@@ -722,6 +749,8 @@
             }, 1500);
         });
     });
+
+    
 </script>
 <!-- ... (le reste du code reste inchangé) ... -->
 

@@ -15,32 +15,48 @@
 
 <!-- Barre de navigation -->
     <!-- Barre de navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--secondary);">
-        <div class="container">
-            <a class="navbar-brand" href="{% url 'home' %} ">
-                <i class="fas fa-book me-2"></i>Bibliothèque
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+            <i class="fas fa-book me-2"></i>
+            MonBiblio
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">Accueil</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'gestion_admin' %}">Admin</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'panier' %}">Mon Panier</a>
+                </li>
+                {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'gestion_admin' %}">Admin</a>
+                        <a href="{% url 'logout' %}" class="nav-link text-warning">Déconnexion</a>
                     </li>
-                                        {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a href="{% url 'logout' %}" class="nav-link text-warning">Déconnexion</a>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">Connexion</a>
-                        </li>
-                    {% endif %}
-                </ul>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Connexion</a>
+                    </li>
+                {% endif %}
+            </ul>
+
+            <form class="d-flex ms-lg-3" method="GET" action="{% url 'home' %}">
+                <div class="input-group">
+                    <input type="search" name="q" class="form-control form-control-sm rounded-pill-start" placeholder="Rechercher..." aria-label="Rechercher" value="{{ request.GET.q }}">
+                    <button class="btn btn-outline-light btn-sm rounded-pill-end" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
             </div>
-        </div>
-    </nav>
+    </div>
+</nav>
 
 <!-- Contenu principal -->
 <main class="container my-4">

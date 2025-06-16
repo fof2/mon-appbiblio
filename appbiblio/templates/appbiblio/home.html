@@ -1,87 +1,80 @@
-{%load static %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>📚 MonBiblio - Votre bibliothèque numérique</title>
-        <link href="" rel="stylesheet">
 
-    
-    <!-- Polices Google -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome -->
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
-    <!-- Bootstrap -->
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'appbiblio/home.css' %}">
-
-
 
 </head>
 
 <body>
-    <!-- Barre de navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
-                <i class="fas fa-book me-2"></i>
-                MonBiblio
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">Accueil</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'gestion_admin' %}">Admin</a>
-                    </li>
-                    <li class="nav-item">
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+            <i class="fas fa-book me-2"></i>
+            MonBiblio
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">Accueil</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'gestion_admin' %}">Admin</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="{% url 'panier' %}">Mon Panier</a>
-                    </li>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'historique' %}">Historique</a>
+                </li>
+                {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'emprunts' %}">Mes Commandes</a>
+                        <a href="{% url 'logout' %}" class="nav-link text-warning">Déconnexion</a>
                     </li>
-                    {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a href="{% url 'logout' %}" class="nav-link text-warning">Déconnexion</a>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">Connexion</a>
-                        </li>
-                    {% endif %}
-                </ul>
-                <div class="d-none d-lg-flex ms-lg-3">
-                    <a href="#" class="btn btn-sm btn-outline-light rounded-pill">
-                        <i class="fas fa-search me-1"></i> Rechercher
-                    </a>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Connexion</a>
+                    </li>
+                {% endif %}
+            </ul>
+
+            <form class="d-flex ms-lg-3" method="GET" action="{% url 'home' %}">
+                <div class="input-group">
+                    <input type="search" name="q" class="form-control form-control-sm rounded-pill-start" placeholder="Rechercher..." aria-label="Rechercher" value="{{ request.GET.q }}">
+                    <button class="btn btn-outline-light btn-sm rounded-pill-end" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
                 </div>
+            </form>
             </div>
-        </div>
-    </nav>
-    
-    <!-- Section Hero -->
+    </div>
+</nav>
+
     <section class="hero-section">
-        <!-- Fonds images -->
         <div class="hero-bg active" style="background-image: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2030&auto=format&fit=crop');"></div>
         <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=2070&auto=format&fit=crop');"></div>
         <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1461342110089-4037e3abd5da?q=80&w=2070&auto=format&fit=crop');"></div>
         <div class="hero-overlay"></div>
 
-        <!-- Contenu -->
         <div class="container">
             <div class="hero-content">
                 <div class="banner">
                     <marquee scrollamount="10">
                     <i><u>MonBiblio 📚</u>, l'univers des livres les plus célèbres</i>
                     </marquee>
-                </div>            
+                </div>
                 <h1 class="hero-title">Découvrez de nouveaux mondes à travers les livres</h1>
                 <p class="hero-text">Notre bibliothèque vous offre un accès à des milliers d'ouvrages. Empruntez, réservez et plongez dans l'univers fascinant de la littérature.</p>
                 <div class="d-flex flex-column flex-sm-row gap-3">
@@ -103,7 +96,6 @@
         </div>
     </section>
 
-    <!-- Carte de bienvenue -->
     <div class="container">
         <div class="welcome-card">
             <div class="welcome-header text-white">
@@ -119,262 +111,428 @@
         </div>
     </div>
 
-    <!-- Section Catégories et Livres -->
-<!-- Section Catégories et Livres -->
-<div class="container">
-    <div class="row">
-        <!-- Section: Filtres par Catégories -->
-        <section class="col-lg-3 mb-4" id="categorie-filter-section">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white">
-                    <h3 class="mb-0">Filtrer par Catégorie</h3>
+    <div class="container">
+        <div class="row">
+            <section class="col-lg-3 mb-4" id="categorie-filter-section">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h3 class="mb-0">Filtrer par Catégorie</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush">
+                            {% for categorie in categories %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="{% url 'categorie_detail' categorie.id %}" class="text-decoration-none text-dark fw-medium">
+                                    <i class="fas fa-folder me-2"></i>{{ categorie.nom }}
+                                </a>
+                                <span class="badge rounded-pill bg-primary">{{ categorie.nombre_livres }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
-                <div class="card-body p-0">
-                    <ul class="list-group list-group-flush">
-                        {% for categorie in categories %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <a href="{% url 'categorie_detail' categorie.id %}" class="text-decoration-none text-dark fw-medium">
-                                <i class="fas fa-folder me-2"></i>{{ categorie.nom }}
-                            </a>
-                            <span class="badge rounded-pill bg-primary">{{ categorie.nombre_livres }}</span>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        </section>
-        
-        <!-- Section: Livres en Vedette -->
-        <section class="col-lg-9 featured-section" id="featured-books-section">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="section-title mb-0">Livres en Vedette</h2>
-                <div class="scroll-controls">
-                    <button id="scroll-left" class="scroll-btn">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <button id="scroll-right" class="scroll-btn">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
-            </div>
+            </section>
 
-            <div class="d-flex overflow-auto gap-4 pb-3" id="featured-books-container" style="scroll-behavior: smooth;">
-                {% for livre in livres %}
-                    <div class="flex-shrink-0" style="width: 280px;">
-                        <div class="book-card">
-                            <div class="book-cover">
-                                <img src="{{ livre.couverture_img }}" alt="Couverture de {{ livre.titre }}">
-                                <div class="book-overlay"></div>
-                                <div class="book-category">{{ livre.categorie.nom }}</div>
-                            </div>
-                            <div class="book-content">
-                                <h3 class="book-title">{{ livre.titre }}</h3>
-                                <p class="book-author">Par {{ livre.auteur }}</p>
-                                <div class="book-meta">
-                                    <div class="book-price">
-                                        <i class="fas fa-dollar-sign me-1"></i>
-                                        {{ livre.prix }}
-                                    </div>
-                                    <div class="book-status {% if livre.statut == 'disponible' %}status-available{% else %}status-unavailable{% endif %}">
-                                        {{ livre.statut|capfirst }}
-                                    </div>
+            <section class="col-lg-9 featured-section" id="featured-books-section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="section-title mb-0">Livres en Vedette</h2>
+                    <div class="scroll-controls">
+                        <button id="scroll-left" class="scroll-btn">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button id="scroll-right" class="scroll-btn">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="d-flex overflow-auto gap-4 pb-3" id="featured-books-container" style="scroll-behavior: smooth;">
+                    {% for livre in livres %}
+                        <div class="flex-shrink-0 book-item" style="width: 280px;"> {# Ajout de la classe book-item #}
+                            <div class="book-card">
+                                <div class="book-cover">
+                                    <img src="{{ livre.couverture_img }}" alt="Couverture de {{ livre.titre }}">
+                                    <div class="book-overlay"></div>
+                                    <div class="book-category">{{ livre.categorie.nom }}</div>
                                 </div>
-                                
-                                <!-- BOUTON pour afficher le résumé -->
-                                <button class="toggle-resume-btn" data-id="{{ livre.id }}">
-                                    <i class="fas fa-book-open me-2"></i>Voir le résumé
-                                </button>
+                                <div class="book-content">
+                                    <h3 class="book-title">{{ livre.titre }}</h3>
+                                    <p class="book-author">Par {{ livre.auteur }}</p>
+                                    <div class="book-meta">
+                                        <div class="book-price">
+                                            <i class="fas fa-dollar-sign me-1"></i>
+                                            {{ livre.prix }}
+                                        </div>
+                                      
+                                        <div class="book-status {% if livre.statut == 'disponible' %}status-available{% else %}status-unavailable{% endif %}" id="book-status-{{ livre.id }}">{{ livre.statut|capfirst }}
+                                        </div>
+                                    </div>
 
-                                <!-- Résumé caché -->
-                                <div id="resume-{{ livre.id }}" class="resume-content" style="display: none;">
-                                    {{ livre.description|linebreaks }}
-                                </div>
+                                    <button class="toggle-resume-btn" data-id="{{ livre.id }}">
+                                        <i class="fas fa-book-open me-2"></i>Voir le résumé
+                                    </button>
 
-                                <!-- Boutons d'action -->
-                                <div class="book-actions">
-                                    <button class="btn-reserve" data-book-id="{{ livre.id }}">
-                                        {% if livre.statut == 'disponible' %}
-                                            <i class="fas fa-bookmark me-2"></i>Réserver
-                                        {% else %}
-                                            <i class="fas fa-shopping-cart me-2"></i>Emprunter
-                                        {% endif %}
-                                    </button>
-                                    <button class="btn-cart" data-book-id="{{ livre.id }}">
-                                        <i class="fas fa-cart-plus me-2"></i>Ajouter au panier
-                                    </button>
+                                    <div id="resume-{{ livre.id }}" class="resume-content" style="display: none;">
+                                        {{ livre.description|linebreaks }}
+                                    </div>
+
+                                    <div class="book-actions">
+                                        <button class="btn btn-cart add-to-cart-btn"
+                                                data-book-id="{{ livre.id }}"
+                                                data-book-title="{{ livre.titre }}">
+                                            <i class="fas fa-shopping-cart me-1"></i> Ajouter au panier
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                {% endfor %}
-            </div>
-        </section>
+                    {% endfor %}
+                </div>
+            </section>
+        </div>
     </div>
-</div>
 
-<!-- Modal de confirmation -->
-<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="confirmationModalLabel">Confirmation</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p id="confirmationMessage"></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <button type="button" class="btn btn-primary" id="confirmAdd">Confirmer</button>
+    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmationModalLabel">Confirmation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="confirmationMessage"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" id="confirmAdd">Confirmer</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- JavaScript nécessaire -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Variables globales
-    let currentBookId = null;
-    const modal = new bootstrap.Modal(document.getElementById('confirmationModal'));
-    const confirmationMessage = document.getElementById('confirmationMessage');
-    const confirmAddBtn = document.getElementById('confirmAdd');
-    
-    // Fonction pour basculer l'affichage du résumé
-    function toggleResume(bookId) {
-        const resumeElement = document.getElementById(`resume-${bookId}`);
-        const buttonElement = document.querySelector(`.toggle-resume-btn[data-id="${bookId}"]`);
-        
-        if (resumeElement.style.display === 'none') {
-            resumeElement.style.display = 'block';
-            buttonElement.innerHTML = '<i class="fas fa-book-open me-2"></i>Masquer le résumé';
-        } else {
-            resumeElement.style.display = 'none';
-            buttonElement.innerHTML = '<i class="fas fa-book-open me-2"></i>Voir le résumé';
+        // --- Fonctions d'aide Globales (peuvent être placées dans un fichier .js séparé et liées) ---
+
+/**
+ * Récupère un cookie par son nom. Utile pour récupérer le token CSRF.
+ * @param {string} name Le nom du cookie à récupérer.
+ * @returns {string|null} La valeur du cookie ou null si non trouvé.
+ */
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Est-ce que cette chaîne de cookie commence par le nom que nous voulons ?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
         }
     }
-    
-    // Fonction pour ajouter un livre au panier
-    function addToCart(bookId) {
-        fetch(`/ajouter_au_panier/${bookId}/`, {
+    return cookieValue;
+}
+
+/**
+ * Met à jour les boutons 'Ajouter au panier' en fonction de l'état actuel du panier dans le session storage.
+ * Si un livre est dans le panier, son bouton sera désactivé et affichera "Ajouté au panier".
+ */
+function updateCartButtons() {
+    const cart = JSON.parse(sessionStorage.getItem('cart') || '{}'); // S'assure que le panier est un objet
+    const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+
+    addToCartButtons.forEach(button => {
+        const bookId = button.getAttribute('data-book-id');
+        if (cart[bookId]) {
+            button.innerHTML = '<i class="fas fa-check me-1"></i> Ajouté au panier';
+            button.classList.add('btn-cart-disabled');
+            button.disabled = true;
+        }
+    });
+}
+
+/**
+ * Met à jour le compteur du panier affiché dans la barre de navigation.
+ */
+function updateCartCounter() {
+    const cart = JSON.parse(sessionStorage.getItem('cart') || '{}');
+    const cartCount = Object.keys(cart).length;
+    const cartCounter = document.getElementById('cart-count');
+
+    if (cartCounter) {
+        cartCounter.textContent = cartCount;
+    }
+}
+
+/**
+ * Bascule la visibilité du résumé d'un livre et met à jour le texte du bouton.
+ * @param {string} bookId L'ID du livre.
+ */
+function toggleResume(bookId) {
+    const resumeElement = document.getElementById(`resume-${bookId}`);
+    const buttonElement = document.querySelector(`.toggle-resume-btn[data-id="${bookId}"]`);
+
+    if (resumeElement) { // S'assurer que l'élément existe
+        const isHidden = resumeElement.style.display === 'none' || resumeElement.style.display === '';
+        resumeElement.style.display = isHidden ? 'block' : 'none';
+
+        if (buttonElement) {
+            buttonElement.innerHTML = isHidden
+                ? '<i class="fas fa-book-open me-2"></i>Masquer le résumé'
+                : '<i class="fas fa-book-open me-2"></i>Voir le résumé';
+        }
+    }
+}
+
+// --- Écouteur principal DOMContentLoaded ---
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialiser le panier dans sessionStorage s'il n'existe pas
+    if (!sessionStorage.getItem('cart')) {
+        sessionStorage.setItem('cart', JSON.stringify({}));
+    }
+
+    // Mettre à jour les boutons du panier et le compteur au chargement de la page
+    updateCartButtons();
+    updateCartCounter(); // Appeler ici pour s'assurer que le compte est correct au chargement
+
+    // --- Script de défilement horizontal ---
+    const scroller = document.getElementById('featured-books-container');
+    const scrollLeftBtn = document.getElementById('scroll-left');
+    const scrollRightBtn = document.getElementById('scroll-right');
+
+    // Fonction pour mettre à jour l'état des boutons de défilement
+    function updateScrollButtons() {
+        if (scroller && scrollLeftBtn && scrollRightBtn) { // Vérifier si les éléments existent
+            scrollLeftBtn.disabled = (scroller.scrollLeft <= 0);
+            scrollRightBtn.disabled = (scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 1);
+        }
+    }
+
+    // Écouteurs d'événements pour les boutons de défilement
+    if (scroller && scrollLeftBtn && scrollRightBtn) { // Ajouter les écouteurs seulement si les éléments existent
+        scrollLeftBtn.addEventListener('click', () => {
+            scroller.scrollBy({ left: -300, behavior: 'smooth' });
+        });
+
+        scrollRightBtn.addEventListener('click', () => {
+            scroller.scrollBy({ left: 300, behavior: 'smooth' });
+        });
+
+        // Mettre à jour les boutons au chargement et lors du défilement
+        scroller.addEventListener('scroll', updateScrollButtons);
+    }
+    window.addEventListener('resize', updateScrollButtons); // Mettre à jour également lors du redimensionnement de la fenêtre
+    updateScrollButtons(); // Mise à jour initiale
+
+    // --- Animation d'apparition des livres ---
+    const bookItems = document.querySelectorAll('.book-item');
+    bookItems.forEach((item, index) => {
+        setTimeout(() => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(20px)';
+            item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+
+            setTimeout(() => {
+                item.style.opacity = '1';
+                item.style.transform = 'translateY(0)';
+            }, 100);
+        }, index * 100);
+    });
+
+    // --- Gestion des boutons d'ajout au panier (utilisant la modale Bootstrap) ---
+    const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+    const confirmationModalElement = document.getElementById('confirmationModal');
+    const bootstrapModal = new bootstrap.Modal(confirmationModalElement);
+    const confirmationMessage = document.getElementById('confirmationMessage');
+    const confirmAddBtn = document.getElementById('confirmAdd');
+
+    let currentBookId = null;
+    let currentBookTitle = null;
+    let currentButton = null;
+
+    addToCartButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const bookId = this.getAttribute('data-book-id');
+            const bookTitle = this.getAttribute('data-book-title');
+
+            // 1. Vérifier d'abord le statut d'authentification auprès du backend
+            fetch('/check_authentication/') // Votre URL Django pour la vérification d'authentification
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('La réponse du réseau n\'était pas OK');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.is_authenticated) {
+                        // L'utilisateur est authentifié, procéder à la vérification du panier local
+                        const cart = JSON.parse(sessionStorage.getItem('cart') || '{}');
+                        if (cart[bookId]) {
+                            alert(`"${bookTitle}" est déjà dans votre panier.`);
+                            return; // Arrêter ici si déjà dans le panier côté client
+                        }
+
+                        // Définir les détails du livre actuel pour la modale
+                        currentBookId = bookId;
+                        currentBookTitle = bookTitle;
+                        currentButton = this;
+                        confirmationMessage.textContent = `Êtes-vous sûr de vouloir ajouter "${bookTitle}" à votre panier ?`;
+                        bootstrapModal.show(); // Afficher la modale de confirmation
+                    } else {
+                        // L'utilisateur n'est PAS authentifié, rediriger vers l'inscription/connexion
+                        alert("Veuillez vous inscrire ou vous connecter pour ajouter des livres à votre panier.");
+                        // Stocker l'URL de la page actuelle dans localStorage pour la redirection après la connexion/inscription
+                        localStorage.setItem('redirect_after_login_url', window.location.pathname);
+                        window.location.href = '/register/'; // Rediriger vers votre page d'inscription
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la vérification de l\'authentification:', error);
+                    alert('Une erreur est survenue lors de la vérification de votre statut. Veuillez réessayer.');
+                });
+        });
+    });
+
+    // Bouton de confirmation dans la modale Bootstrap
+    confirmAddBtn.addEventListener('click', function() {
+        bootstrapModal.hide(); // Cacher la modale immédiatement
+
+        if (!currentBookId) return; // S'assurer qu'un livre est sélectionné
+
+        // Effectuer la requête AJAX (Fetch API) pour ajouter le livre au panier et réserver
+        fetch(`/panier/ajouter/${currentBookId}/`, {
             method: 'POST',
             headers: {
-                'X-CSRFToken': '{{ csrf_token }}',
-                'Content-Type': 'application/json'
-            }
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({}) // Envoyer un corps vide ou un JSON simple si nécessaire
         })
-        .then(response => response.json())
+        .then(response => {
+            // Gérer les différents statuts HTTP (par exemple, 401 pour non autorisé)
+            if (response.status === 401) {
+                return response.json().then(errorData => {
+                    alert(errorData.message || 'Vous devez être connecté.');
+                    localStorage.setItem('redirect_after_login_url', window.location.pathname);
+                    window.location.href = '/login/'; // Rediriger vers la page de connexion si non autorisé
+                    return Promise.reject('Authentification requise, redirection vers la connexion.'); // Arrêter le traitement ultérieur
+                });
+            }
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    throw new Error(errorData.message || 'Erreur réseau inconnue');
+                });
+            }
+            return response.json(); // Analyser la réponse JSON
+        })
         .then(data => {
             if (data.success) {
-                // Mettre à jour le compteur du panier
-                updateCartCount();
-                
-                // Afficher une notification
-                showNotification('Livre ajouté au panier avec succès!', 'success');
+                // Mettre à jour le sessionStorage
+                const cart = JSON.parse(sessionStorage.getItem('cart') || '{}');
+                cart[currentBookId] = {
+                    id: currentBookId,
+                    title: currentBookTitle,
+                    added_at: new Date().toISOString()
+                };
+                sessionStorage.setItem('cart', JSON.stringify(cart));
+
+                // Mettre à jour l'état du bouton "Ajouter au panier"
+                if (currentButton) {
+                    currentButton.innerHTML = '<i class="fas fa-check me-1"></i> Ajouté au panier';
+                    currentButton.classList.add('btn-cart-disabled');
+                    currentButton.disabled = true;
+                }
+
+                // Mettre à jour l'affichage du statut du livre sur la page
+                const bookStatusElement = document.getElementById(`book-status-${currentBookId}`);
+                if (bookStatusElement && data.new_status) {
+                    bookStatusElement.textContent = data.new_status.charAt(0).toUpperCase() + data.new_status.slice(1);
+                    bookStatusElement.classList.remove('status-available', 'status-unavailable', 'status-emprunté');
+                    bookStatusElement.classList.add('status-reserved');
+                }
+
+                // Mettre à jour le compteur du panier dans la barre de navigation
+                updateCartCounter();
+                alert(`"${currentBookTitle}" a été ajouté à votre panier et est maintenant réservé !`);
+
             } else {
-                // Afficher un message d'erreur
-                showNotification(data.message || 'Erreur lors de l\'ajout au panier', 'error');
+                // Gérer les cas où success est false (ex: déjà dans le panier, non disponible)
+                alert(data.message);
+                // Si le livre était déjà dans le panier, mettre à jour le bouton immédiatement
+                if (data.in_cart && currentButton) {
+                    currentButton.innerHTML = '<i class="fas fa-check me-1"></i> Ajouté au panier';
+                    currentButton.classList.add('btn-cart-disabled');
+                    currentButton.disabled = true;
+                }
+                // S'assurer que le statut du livre est correctement reflété s'il était déjà réservé/non disponible
+                const bookStatusElement = document.getElementById(`book-status-${currentBookId}`);
+                if (bookStatusElement && data.new_status) {
+                    bookStatusElement.textContent = data.new_status.charAt(0).toUpperCase() + data.new_status.slice(1);
+                    bookStatusElement.classList.remove('status-available', 'status-unavailable', 'status-reserved', 'status-emprunté');
+                    if (data.new_status === 'réservé') {
+                        bookStatusElement.classList.add('status-reserved');
+                    } else if (data.new_status === 'emprunté') {
+                        bookStatusElement.classList.add('status-emprunté');
+                    }
+                    // Ajouter d'autres statuts si nécessaire
+                }
             }
         })
         .catch(error => {
-            console.error('Erreur:', error);
-            showNotification('Une erreur est survenue', 'error');
+            // Capturer les erreurs réseau ou les erreurs levées depuis le bloc .then()
+            console.error('Erreur lors de l\'ajout au panier:', error);
+            alert('Une erreur est survenue lors de l\'ajout au panier. Veuillez réessayer.');
         });
-    }
-    
-    // Fonction pour mettre à jour le compteur du panier
-    function updateCartCount() {
-        fetch('/panier_count/')
-        .then(response => response.json())
-        .then(data => {
-            const cartCountElement = document.getElementById('cart-count');
-            if (cartCountElement) {
-                cartCountElement.textContent = data.count;
-            }
-        });
-    }
-    
-    // Fonction pour afficher les notifications
-    function showNotification(message, type) {
-        // Créer l'élément de notification
-        const notification = document.createElement('div');
-        notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
-        notification.style.zIndex = '1100';
-        notification.innerHTML = `
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        `;
-        
-        // Ajouter à la page
-        document.body.appendChild(notification);
-        
-        // Supprimer automatiquement après 3 secondes
-        setTimeout(() => {
-            notification.remove();
-        }, 3000);
-    }
-    
-    // Écouteurs d'événements pour les résumés
+    });
+
+    // --- Écouteurs d'événements pour les bascules de résumé ---
     document.querySelectorAll('.toggle-resume-btn').forEach(button => {
         button.addEventListener('click', function() {
             const bookId = this.getAttribute('data-id');
             toggleResume(bookId);
         });
     });
-    
-    // Écouteurs d'événements pour les boutons "Ajouter au panier"
-    document.querySelectorAll('.btn-cart').forEach(button => {
+
+    // --- Gestion de la redirection après la connexion/inscription ---
+    // Ceci s'exécute au chargement de la page et vérifie s'il y a une URL stockée
+    // à partir d'une précédente redirection d'authentification.
+    const redirectUrl = localStorage.getItem('redirect_after_login_url');
+    if (redirectUrl && window.location.pathname !== redirectUrl) { // Éviter la boucle infinie si déjà sur la page cible
+        // Si l'utilisateur vient de se connecter ou de s'inscrire, nous voulons le rediriger vers la page
+        // où il a initié l'action "ajouter au panier".
+        localStorage.removeItem('redirect_after_login_url'); // Effacer l'URL stockée
+        window.location.href = redirectUrl; // Rediriger l'utilisateur
+    }
+
+    // --- Animation pour le bouton "Réserver" (si toujours pertinent) ---
+    // Cette partie du code semble être pour un effet visuel côté client uniquement.
+    // Si vous gérez la réservation via `ajouter_au_panier` et Django,
+    // cette animation spécifique pourrait être redondante ou pourrait être déclenchée par la réponse `data.success`.
+    const reserveButtons = document.querySelectorAll('.btn-reserve');
+    reserveButtons.forEach(button => {
         button.addEventListener('click', function() {
-            const bookId = this.getAttribute('data-book-id');
-            currentBookId = bookId;
-            
-            // Vérifier si le livre est déjà dans le panier
-            fetch(`/livre_dans_panier/${bookId}/`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.in_cart) {
-                    showNotification('Ce livre est déjà dans votre panier', 'error');
-                } else {
-                    // Afficher la modal de confirmation
-                    confirmationMessage.textContent = `Voulez-vous ajouter "${this.closest('.book-card').querySelector('.book-title').textContent}" à votre panier?`;
-                    modal.show();
-                }
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-                showNotification('Erreur de vérification du panier', 'error');
-            });
+            // Note: Le comportement de ce bouton semble indépendant du processus "ajouter au panier".
+            // S'il est censé être le bouton "ajouter au panier", son sélecteur devrait être '.add-to-cart-btn'.
+            // S'il s'agit d'un bouton "Réserver" distinct, assurez-vous que sa logique s'aligne avec votre backend.
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Traitement...';
+
+            setTimeout(() => {
+                this.innerHTML = originalText; // Revenir à l'état initial si échec, ou définir sur 'Réservé!'
+                this.classList.remove('btn-reserve');
+                this.classList.add('btn-success');
+                this.innerHTML = '<i class="fas fa-check me-1"></i> Réservé!';
+            }, 1500);
         });
     });
-    
-    // Confirmation de l'ajout au panier
-    confirmAddBtn.addEventListener('click', function() {
-        if (currentBookId) {
-            addToCart(currentBookId);
-            modal.hide();
-        }
-    });
-    
-    // Fonctionnalité de défilement horizontal
-    const scrollContainer = document.getElementById('featured-books-container');
-    const scrollLeftBtn = document.getElementById('scroll-left');
-    const scrollRightBtn = document.getElementById('scroll-right');
-    
-    scrollLeftBtn.addEventListener('click', () => {
-        scrollContainer.scrollBy({ left: -300, behavior: 'smooth' });
-    });
-    
-    scrollRightBtn.addEventListener('click', () => {
-        scrollContainer.scrollBy({ left: 300, behavior: 'smooth' });
-    });
-    
-    // Mettre à jour le compteur du panier au chargement
-    updateCartCount();
 });
 </script>
 
 
-<!-- Section Statistiques -->
+
 <section class="stats-section py-5">
     <div class="container">
         <div class="stats-header text-center mb-5">
@@ -382,9 +540,9 @@ document.addEventListener('DOMContentLoaded', function() {
             <p class="text-muted fst-italic">Toutes les données clés sur notre bibliothèque en un coup d'œil</p>
             <hr class="mx-auto" style="width: 60px; border-top: 3px solid #2e8b57;">
         </div>
-        
+
         <div class="row g-4">
-            <!-- Stat 1: Livres Disponibles -->
+            <!-- Livres Disponibles -->
             <div class="col-md-6 col-lg-3">
                 <div class="card h-100 shadow border-0">
                     <div class="card-body text-center p-4">
@@ -397,7 +555,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
 
-            <!-- Stat 2: Livres Empruntés -->
+            <!-- Livres Empruntés -->
             <div class="col-md-6 col-lg-3">
                 <div class="card h-100 shadow border-0">
                     <div class="card-body text-center p-4">
@@ -410,7 +568,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
 
-            <!-- Stat 3: Nombre de Catégories -->
+            <!-- Catégories -->
             <div class="col-md-6 col-lg-3">
                 <div class="card h-100 shadow border-0">
                     <div class="card-body text-center p-4">
@@ -423,7 +581,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
 
-            <!-- Stat 4: Nombre d'Auteurs -->
+            <!-- Auteurs -->
             <div class="col-md-6 col-lg-3">
                 <div class="card h-100 shadow border-0">
                     <div class="card-body text-center p-4">
@@ -436,7 +594,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
 
-            <!-- Stat 5: Membres Actifs -->
+            <!-- Membres Actifs -->
             <div class="col-md-6 col-lg-3">
                 <div class="card h-100 shadow border-0">
                     <div class="card-body text-center p-4">
@@ -449,20 +607,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
 
-            <!-- Stat 6: Emprunts ce mois -->
-            <div class="col-md-6 col-lg-3">
-                <div class="card h-100 shadow border-0">
-                    <div class="card-body text-center p-4">
-                        <div class="stat-icon mb-3 text-purple">
-                            <i class="fas fa-calendar-check fa-3x"></i>
-                        </div>
-                        <h3 class="stat-number card-title" id="emprunts_par_mois">{{ emprunts_par_mois }}</h3>
-                        <p class="stat-label card-text text-muted">Emprunts ce Mois</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Stat 7: Prix Littéraires -->
+            <!-- Prix Littéraires -->
             <div class="col-md-6 col-lg-3">
                 <div class="card h-100 shadow border-0">
                     <div class="card-body text-center p-4">
@@ -474,256 +619,266 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>
             </div>
+
+            <!-- Livres Réservés -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 shadow border-0">
+                    <div class="card-body text-center p-4">
+                        <div class="stat-icon mb-3 text-purple">
+                            <i class="fas fa-bookmark fa-3x"></i>
+                        </div>
+                        <h3 class="stat-number card-title" id="livres_reserves">{{ livres_reserves }}</h3>
+                        <p class="stat-label card-text text-muted">Livres Réservés</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Livres Retournés -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 shadow border-0">
+                    <div class="card-body text-center p-4">
+                        <div class="stat-icon mb-3 text-teal">
+                            <i class="fas fa-undo fa-3x"></i>
+                        </div>
+                        <h3 class="stat-number card-title" id="livres_retournes">{{ livres_retournes }}</h3>
+                        <p class="stat-label card-text text-muted">Livres Retournés</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
 <style>
+    /* Styles améliorés pour les statistiques */
     .stats-section {
-        background-color: #f8f9fa;
+        padding: 4rem 0;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 20px;
+        margin: 3rem 0;
     }
-    .card {
-        border-radius: 15px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    .stats-header h2 {
+        color: #2e8b57;
+        position: relative;
+        display: inline-block;
+        margin-bottom: 1.5rem;
     }
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+
+    .stats-header h2:after {
+        content: '';
+        position: absolute;
+        bottom: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 4px;
+        background: #daa520;
+        border-radius: 2px;
     }
+
     .stat-icon {
-        display: flex;
-        justify-content: center;
-        align-items: center;
         width: 80px;
         height: 80px;
-        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         border-radius: 50%;
-        background: rgba(46, 139, 87, 0.1);
-    }
-    .stat-number {
+        margin: 0 auto 1.5rem;
         font-size: 2rem;
-        font-weight: bold;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    .stat-icon:hover {
+        transform: translateY(-5px) rotate(5deg);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
         margin-bottom: 0.5rem;
+        transition: all 0.5s ease;
     }
-    .text-purple {
-        color: #6f42c1;
+
+    .stat-label {
+        font-size: 1.1rem;
+        color: #495057;
+        font-weight: 500;
+        background: rgba(255,255,255,0.7);
+        padding: 5px 15px;
+        border-radius: 20px;
+        display: inline-block;
     }
-    .text-gold {
-        color: #ffc107;
+
+    /* Couleurs personnalisées */
+    .text-gold { color: #daa520 !important; }
+    .text-purple { color: #6f42c1 !important; }
+    .text-teal { color: #20c997 !important; }
+
+    /* Animation de pulsation */
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    .stats-section:hover .stat-icon {
+        animation: pulse 2s infinite;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .stat-icon {
+            width: 70px;
+            height: 70px;
+            font-size: 1.8rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+        }
     }
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Configuration des statistiques avec valeurs réelles
-    const statsConfig = [
-        { 
-            id: 'livres_disponibles', 
-            target: parseInt("{{ livres_disponibles }}"), 
-            icon: 'book', 
-            color: '#2e8b57' 
-        },
-        { 
-            id: 'livres_empruntes', 
-            target: parseInt("{{ livres_empruntes }}"), 
-            icon: 'book-reader', 
-            color: '#6a5acd' 
-        },
-        { 
-            id: 'nombre_categories', 
-            target: parseInt("{{ nombre_categories }}"), 
-            icon: 'tags', 
-            color: '#daa520' 
-        },
-        { 
-            id: 'nombre_auteurs', 
-            target: parseInt("{{ nombre_auteurs }}"), 
-            icon: 'user', 
-            color: '#dc3545' 
-        },
-        { 
-            id: 'membres_actifs', 
-            target: parseInt("{{ membres_actifs }}"), 
-            icon: 'users', 
-            color: '#0dcaf0' 
-        },
-        { 
-            id: 'emprunts_par_mois', 
-            target: parseInt("{{ emprunts_par_mois }}"), 
-            icon: 'calendar-check', 
-            color: '#198754' 
-        },
-        { 
-            id: 'prix_litteraires', 
-            target: parseInt("{{ prix_litteraires }}"), 
-            icon: 'trophy', 
-            color: '#6f42c1' 
-        }
-    ];
-    
-    // Ajouter des animations de couleur aux icônes
-    statsConfig.forEach(stat => {
-        const icon = document.querySelector(`#${stat.id}`).closest('.d-flex').querySelector('.stat-icon');
-        if (icon) {
-            icon.style.backgroundColor = `${stat.color}15`;
-            icon.style.color = stat.color;
-            icon.style.border = `2px solid ${stat.color}`;
+    document.addEventListener('DOMContentLoaded', function() {
+        // Configuration des statistiques avec valeurs réelles
+        const statsConfig = [
+            {
+                id: 'livres_disponibles',
+                target: parseInt("{{ livres_disponibles|default:0 }}"),
+                icon: 'book',
+                color: '#2e8b57'
+            },
+            {
+                id: 'livres_empruntes',
+                target: parseInt("{{ livres_empruntes|default:0 }}"),
+                icon: 'book-reader',
+                color: '#6a5acd'
+            },
+            {
+                id: 'nombre_categories',
+                target: parseInt("{{ nombre_categories|default:0 }}"),
+                icon: 'tags',
+                color: '#daa520'
+            },
+            {
+                id: 'nombre_auteurs',
+                target: parseInt("{{ nombre_auteurs|default:0 }}"),
+                icon: 'user',
+                color: '#dc3545'
+            },
+            {
+                id: 'membres_actifs',
+                target: parseInt("{{ membres_actifs|default:0 }}"),
+                icon: 'users',
+                color: '#0dcaf0'
+            },
+            {
+                id: 'prix_litteraires',
+                target: parseInt("{{ prix_litteraires|default:0 }}"),
+                icon: 'trophy',
+                color: '#daa520'
+            },
+            {
+                id: 'livres_reserves',
+                target: parseInt("{{ livres_reserves|default:0 }}"),
+                icon: 'bookmark',
+                color: '#6f42c1'
+            },
+            {
+                id: 'livres_retournes',
+                target: parseInt("{{ livres_retournes|default:0 }}"),
+                icon: 'undo',
+                color: '#20c997'
+            }
+        ];
+
+        // Ajouter des animations de couleur aux icônes
+        statsConfig.forEach(stat => {
+            const statElement = document.getElementById(stat.id);
+            if (statElement) {
+                // Sélection plus robuste de l'icône parente
+                const iconContainer = statElement.closest('.card-body').querySelector('.stat-icon');
+                if (iconContainer) {
+                    iconContainer.style.backgroundColor = `${stat.color}15`;
+                    iconContainer.style.color = stat.color;
+                    iconContainer.style.border = `2px solid ${stat.color}`;
+                }
+            }
+        });
+
+        // Fonction d'animation des compteurs
+        const animateCounters = () => {
+            statsConfig.forEach(stat => {
+                const counter = document.getElementById(stat.id);
+                if (!counter) return;
+
+                const target = stat.target;
+                const duration = 2000;
+                const frameDuration = 1000 / 60;
+                const totalFrames = Math.round(duration / frameDuration);
+                let frame = 0;
+
+                // Sauvegarder la valeur finale
+                const finalValue = counter.innerText;
+
+                // Initialiser à 0 pour l'animation seulement si la cible est un nombre valide
+                if (!isNaN(target)) {
+                    counter.innerText = '0';
+                } else {
+                    // Si la cible n'est pas un nombre, afficher la valeur finale sans animation
+                    counter.innerText = finalValue;
+                    return;
+                }
+
+                // Animer l'augmentation du compteur
+                const counterInterval = setInterval(() => {
+                    frame++;
+
+                    // Calculer la progression
+                    const progress = frame / totalFrames;
+                    const currentValue = Math.round(target * progress);
+
+                    counter.innerText = currentValue.toLocaleString();
+
+                    if (frame === totalFrames) {
+                        clearInterval(counterInterval);
+
+                        // Restaurer la valeur exacte
+                        counter.innerText = finalValue;
+
+                        // Ajouter un effet après l'animation
+                        counter.style.fontWeight = 'bold';
+                        counter.style.color = stat.color;
+                        counter.style.transform = 'scale(1.1)';
+
+                        setTimeout(() => {
+                            counter.style.transform = 'scale(1)';
+                        }, 300);
+                    }
+                }, frameDuration);
+            });
+        };
+
+        // Observer l'intersection pour lancer l'animation au défilement
+        const statsSection = document.querySelector('.stats-section');
+        if (statsSection) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animateCounters();
+                        observer.unobserve(statsSection);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            observer.observe(statsSection);
         }
     });
-    
-    // Fonction d'animation des compteurs
-    const animateCounters = () => {
-        statsConfig.forEach(stat => {
-            const counter = document.getElementById(stat.id);
-            if (!counter) return;
-            
-            const target = stat.target;
-            const duration = 2000;
-            const frameDuration = 1000 / 60;
-            const totalFrames = Math.round(duration / frameDuration);
-            let frame = 0;
-            
-            // Sauvegarder la valeur finale
-            const finalValue = counter.innerText;
-            
-            // Initialiser à 0 pour l'animation
-            counter.innerText = '0';
-            
-            // Animer l'augmentation du compteur
-            const counterInterval = setInterval(() => {
-                frame++;
-                
-                // Calculer la progression
-                const progress = frame / totalFrames;
-                const currentValue = Math.round(target * progress);
-                
-                counter.innerText = currentValue.toLocaleString();
-                
-                if (frame === totalFrames) {
-                    clearInterval(counterInterval);
-                    
-                    // Restaurer la valeur exacte
-                    counter.innerText = finalValue;
-                    
-                    // Ajouter un effet après l'animation
-                    counter.style.fontWeight = 'bold';
-                    counter.style.color = stat.color;
-                    counter.style.transform = 'scale(1.1)';
-                    
-                    setTimeout(() => {
-                        counter.style.transform = 'scale(1)';
-                    }, 300);
-                }
-            }, frameDuration);
-        });
-    };
-    
-    // Observer l'intersection pour lancer l'animation au défilement
-    const statsSection = document.querySelector('.stats-section');
-    if (statsSection) {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    animateCounters();
-                    observer.unobserve(statsSection);
-                }
-            });
-        }, { threshold: 0.1 });
-        
-        observer.observe(statsSection);
-    }
-});
 </script>
-
-<style>
-/* Styles améliorés pour les statistiques */
-.stats-section {
-    padding: 4rem 0;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-radius: 20px;
-    margin: 3rem 0;
-}
-
-.stats-header h2 {
-    color: #2e8b57;
-    position: relative;
-    display: inline-block;
-    margin-bottom: 1.5rem;
-}
-
-.stats-header h2:after {
-    content: '';
-    position: absolute;
-    bottom: -15px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100px;
-    height: 4px;
-    background: #daa520;
-    border-radius: 2px;
-}
-
-.stat-icon {
-    width: 80px;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    margin: 0 auto 1.5rem;
-    font-size: 2rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
-
-.stat-icon:hover {
-    transform: translateY(-5px) rotate(5deg);
-    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-}
-
-.stat-number {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    transition: all 0.5s ease;
-}
-
-.stat-label {
-    font-size: 1.1rem;
-    color: #495057;
-    font-weight: 500;
-    background: rgba(255,255,255,0.7);
-    padding: 5px 15px;
-    border-radius: 20px;
-    display: inline-block;
-}
-
-/* Animation de pulsation */
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-}
-
-.stats-section:hover .stat-icon {
-    animation: pulse 2s infinite;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .stat-icon {
-        width: 70px;
-        height: 70px;
-        font-size: 1.8rem;
-    }
-    
-    .stat-number {
-        font-size: 2rem;
-    }
-}
-</style>
-
-    <!-- Section Newsletter -->
     <section class="newsletter-section">
         <div class="container">
             <div class="newsletter-content">
@@ -734,175 +889,99 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p class="newsletter-text">
                     Inscrivez-vous à notre newsletter mensuelle pour découvrir des recommandations personnalisées et les dernières nouveautés de notre bibliothèque.
                 </p>
-                
+
                 <form class="newsletter-form">
-                    <input type="email" class="newsletter-input" placeholder="Votre adresse email" required>
-                    <button type="submit" class="newsletter-btn">
-                        S'inscrire <i class="fas fa-arrow-right ms-2"></i>
-                    </button>
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" placeholder="Votre adresse email" aria-label="Votre adresse email" required>
+                        <button class="btn btn-primary" type="submit">S'inscrire</button>
+                    </div>
                 </form>
-                <p class="newsletter-legal">
-                    En vous inscrivant, vous acceptez de recevoir nos emails. Vous pourrez vous désabonner à tout moment.
-                </p>
             </div>
         </div>
     </section>
-
-    <!-- Pied de page -->
     <footer class="footer">
-        <div class="container">
-            <div class="row">
-                <!-- À propos -->
-                <div class="col-lg-4 mb-5 mb-lg-0">
-                    <div class="footer-brand">
-                        <i class="fas fa-book me-2"></i> MonBiblio
-                    </div>
-                    <p class="footer-text">
-                        Notre bibliothèque est dédiée à la promotion de la lecture et à l'accès à la connaissance pour tous. Nous proposons des milliers d'ouvrages dans toutes les catégories.
-                    </p>
-                    <div class="footer-social">
-                        <a href="#" class="footer-social-link"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="footer-social-link"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="footer-social-link"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="footer-social-link"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
+    <div class="container">
+        <div class="row">
+            <!-- À propos -->
+            <div class="col-lg-4 mb-5 mb-lg-0">
+                <div class="footer-brand">
+                    <i class="fas fa-book"></i> Bibliothèque
                 </div>
-
-                <!-- Liens rapides -->
-                <div class="col-md-6 col-lg-2 mb-4 mb-md-0">
-                    <h3 class="footer-title">Liens Rapides</h3>
-                    <ul class="footer-links">
-                        <li class="footer-link"><a href="#"><i class="fas fa-home me-2"></i>Accueil</a></li>
-                        <li class="footer-link"><a href="#"><i class="fas fa-book me-2"></i>Catalogue</a></li>
-                        <li class="footer-link"><a href="#"><i class="fas fa-star me-2"></i>Nouveautés</a></li>
-                        <li class="footer-link"><a href="#"><i class="fas fa-calendar me-2"></i>Événements</a></li>
-                        <li class="footer-link"><a href="#"><i class="fas fa-info-circle me-2"></i>À Propos</a></li>
-                        <li class="footer-link"><a href="#"><i class="fas fa-phone me-2"></i>Contact</a></li>
-                    </ul>
-                </div>
-
-                <!-- Services -->
-                <div class="col-md-6 col-lg-2 mb-4 mb-md-0">
-                    <h3 class="footer-title">Services</h3>
-                    <ul class="footer-links">
-                        <li class="footer-link"><a href="#"><i class="fas fa-bookmark me-2"></i>Emprunter</a></li>
-                        <li class="footer-link"><a href="#"><i class="fas fa-calendar-check me-2"></i>Réserver</a></li>
-                        <li class="footer-link"><a href="#"><i class="fas fa-tablet-alt me-2"></i>E-Books</a></li>
-                        <li class="footer-link"><a href="#"><i class="fas fa-chalkboard-teacher me-2"></i>Ateliers</a></li>
-                        <li class="footer-link"><a href="#"><i class="fas fa-id-card me-2"></i>Adhésion</a></li>
-                    </ul>
-                </div>
-
-                <!-- Contact -->
-                <div class="col-md-6 col-lg-4">
-                    <h3 class="footer-title">Contact</h3>
-                    <div class="footer-contact">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <div class="footer-contact-text">
-                            123 Rue de la Bibliothèque Angre, 75001 Abidjan, Cote D'Ivoire
-                        </div>
-                    </div>
-                    <div class="footer-contact">
-                        <i class="fas fa-phone"></i>
-                        <div class="footer-contact-text">
-                            +225 07 57 67 62 27
-                        </div>
-                    </div>
-                    <div class="footer-contact">
-                        <i class="fas fa-envelope"></i>
-                        <div class="footer-contact-text">
-                            <a href="mailto:mail1biblio@bibliotheque.ci">mail1biblio@bibliotheque.ci</a>
-                        </div>
-                    </div>
-                    <div class="footer-contact">
-                        <i class="fas fa-clock"></i>
-                        <div class="footer-contact-text">
-                            Lun-Ven: 8h-18h, Sam: 9h-16h
-                        </div>
-                    </div>
+                <p class="footer-text">
+                    Notre bibliothèque est dédiée à la promotion de la lecture et à l'accès à la connaissance pour tous.
+                </p>
+                <div class="footer-social">
+                    <a href="#" class="footer-social-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="footer-social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="footer-social-link"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="footer-social-link"><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
 
-            <!-- Pied de page bas -->
-            <div class="footer-bottom">
+            <!-- Liens rapides -->
+            <div class="col-md-4 col-lg-2 mb-4 mb-md-0">
+                <h3 class="footer-title">Liens Rapides</h3>
+                <ul class="footer-links">
+                    <li class="footer-link"><a href="#">Accueil</a></li>
+                    <li class="footer-link"><a href="#">Catalogue</a></li>
+                    <li class="footer-link"><a href="#">Nouveautés</a></li>
+                    <li class="footer-link"><a href="#">Événements</a></li>
+                    <li class="footer-link"><a href="#">À Propos</a></li>
+                    <li class="footer-link"><a href="#">Contact</a></li>
+                </ul>
+            </div>
+
+            <!-- Services -->
+            <div class="col-md-4 col-lg-2 mb-4 mb-md-0">
+                <h3 class="footer-title">Services</h3>
+                <ul class="footer-links">
+                    <li class="footer-link"><a href="#">Emprunter</a></li>
+                    <li class="footer-link"><a href="#">Réserver</a></li>
+                    <li class="footer-link"><a href="#">E-Books</a></li>
+                    <li class="footer-link"><a href="#">Ateliers</a></li>
+                    <li class="footer-link"><a href="#">Adhésion</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact -->
+            <div class="col-md-4 col-lg-4">
+                <h3 class="footer-title">Contact</h3>
+                <div class="footer-contact">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div class="footer-contact-text">
+                        123 Rue de la Bibliothèque, 75001 Paris, France
+                    </div>
+                </div>
+                <div class="footer-contact">
+                    <i class="fas fa-phone"></i>
+                    <div class="footer-contact-text">
+                        +225 07 57 67 62 27
+                    </div>
+                </div>
+                <div class="footer-contact">
+                    <i class="fas fa-envelope"></i>
+                    <div class="footer-contact-text">
+                        <a href="mailto:mail1biblio@bibliotheque.ci" style="color: inherit; text-decoration: none;">
+                            mail1biblio@bibliotheque.ci
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pied de page bas -->
+        <div class="footer-bottom mt-4 pt-3 border-top">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+                <div class="text-muted">
+                    &copy; 2025 Bibliothèque. Tous droits réservés.
+                </div>
                 <div class="footer-legal">
-                    &copy; 2025 MonBiblio. Tous droits réservés. | 
                     <a href="#">Politique de confidentialité</a> |
                     <a href="#">Conditions d'utilisation</a>
                 </div>
             </div>
         </div>
-    </footer>
-
-    <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Dans votre template (home.html ou categorie_detail.html) -->
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Gestion des boutons d'ajout au panier
-    document.querySelectorAll('.btn-cart').forEach(button => {
-        button.addEventListener('click', function() {
-            const bookId = this.getAttribute('data-book-id');
-            
-            // Envoyer d'abord une demande de confirmation
-            fetch(`/ajouter-au-panier/${bookId}/`, {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.confirmation) {
-                    if (confirm(data.message)) {
-                        // Si l'utilisateur confirme, envoyer la requête POST
-                        fetch(`/ajouter-au-panier/${bookId}/`, {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRFToken': '{{ csrf_token }}',
-                                'X-Requested-With': 'XMLHttpRequest'
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(result => {
-                            if (result.success) {
-                                alert('Livre ajouté au panier avec succès!');
-                                
-                                // Désactiver le bouton
-                                this.innerHTML = '<i class="fas fa-check me-1"></i> Ajouté';
-                                this.classList.add('btn-cart-disabled');
-                                this.disabled = true;
-                                
-                                // Mettre à jour le compteur du panier
-                                updateCartCounter();
-                            } else {
-                                alert(result.message || 'Erreur lors de l\'ajout au panier');
-                            }
-                        });
-                    }
-                } else if (data.success === false) {
-                    alert(data.message);
-                }
-            });
-        });
-    });
-    
-    function updateCartCounter() {
-        // Récupérer le compteur du panier dans la navbar
-        const cartCounter = document.getElementById('cart-count');
-        if (cartCounter) {
-            // Faire une requête pour obtenir le nombre d'articles dans le panier
-            fetch('/panier-count/')
-                .then(response => response.json())
-                .then(data => {
-                    cartCounter.textContent = data.count;
-                });
-        }
-    }
-});
-</script>
-
+    </div>
+</footer>
 </body>
 </html>
