@@ -255,7 +255,7 @@
                                 </td>
                                 <td>{{ livre.auteur }}</td>
                                 <td>
-                                    <span class="status-badge status-disponible">disponible</span>
+                                    <span class="status-badge status-disponible">{{ livre.statut }}</span>
                                 </td>
                                 <td class="text-end">
                                     <a href="{% url 'modifier_livre' livre.id %}" class="btn btn-sm btn-primary action-btn" title="Modifier">
